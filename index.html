@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Okurimono-in — Posters & Frames</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <h1 class="brand">Okurimono-in</h1>
+      <nav class="nav">
+        <a href="#home">Home</a>
+        <a href="#posters">Poster</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+
+    <!-- Marquee promo -->
+    <div class="marquee-wrap">
+      <marquee behavior="scroll" direction="left">🎉 Diwali Sale — Up to 40% OFF on selected posters! Use code DIWALI40 • Limited time only.</marquee>
+    </div>
+  </header>
+
+  <main id="home">
+    <!-- Hero -->
+    <section class="hero container">
+      <div class="hero-left">
+        <h2>Stunning Posters • Custom Designs • Frames</h2>
+        <p>Choose from curated designs or get a custom poster for weddings, birthdays, corporate gifts and more.</p>
+        <a class="btn primary" href="#posters">Shop Posters</a>
+      </div>
+      <div class="hero-right">
+        <img src="https://picsum.photos/seed/okuri-hero/720/480" alt="Hero poster preview" />
+      </div>
+    </section>
+
+    <!-- 3a Feature / Reviews -->
+    <section id="features" class="container section">
+      <h3 class="section-title">Featured • Best Reviews</h3>
+      <div class="feature-grid" id="featureGrid">
+        <!-- JS will populate feature/review cards -->
+      </div>
+    </section>
+
+    <!-- 3b Custom Design -->
+    <section id="custom" class="container section alt">
+      <div class="custom-wrap">
+        <img src="https://picsum.photos/seed/custom/520/360" alt="Custom poster design" class="custom-image" />
+        <div class="custom-text">
+          <h3>Custom Poster Design</h3>
+          <p>We design custom posters for weddings, birthdays, anniversaries, corporate events and more. Tell us your theme, colors and message — we'll craft the visual.</p>
+          <ul>
+            <li>Wedding invitations and keepsake posters</li>
+            <li>Birthday & anniversary special prints</li>
+            <li>Corporate & event posters</li>
+          </ul>
+          <a class="btn" href="#posters">Request Custom Design</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3c Poster & Frame -->
+    <section id="posters" class="container section">
+      <h3 class="section-title">Posters & Frames</h3>
+      <div class="filters">
+        <label>Category:
+          <select id="categoryFilter">
+            <option value="all">All</option>
+            <option value="art">Art</option>
+            <option value="movie">Movie</option>
+            <option value="event">Event</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <!-- JS will inject poster cards -->
+      </div>
+    </section>
+
+    <!-- About section -->
+    <section id="about" class="container section alt">
+      <h3 class="section-title">About Okurimono-in</h3>
+      <p>Okurimono-in is a small studio focused on meaningful printed gifts. We combine creative design with high-quality printing and framing. Fast processing, secure shipping, and customer support.</p>
+      <div class="about-stats">
+        <div><strong>10+</strong><span>Years experience</span></div>
+        <div><strong>500+</strong><span>Posters sold</span></div>
+        <div><strong>100%</strong><span>Customer satisfaction</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Okurimono-in • Made with ❤️</p>
+    </div>
+  </footer>
+
+  <!-- Modal for viewing poster -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button id="closeModal" class="modal-close">✕</button>
+      <img id="modalImg" src="" alt="Poster large view" />
+      <div id="modalMeta" class="modal-meta"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
