@@ -1,318 +1,780 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>OkurimonoIN — Posters & Frames</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Okurimono.in — Posters & Frames</title>
+<meta name="description" content="Okurimono.in premium posters & frames — Kodak 180 GSM.">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800;900&family=Anton&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b0f1a; --accent:#ccff00; --primary:#0a66ff; --card:#0f1724; --muted:#9aa3b2; --white:#fff;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:Inter, Poppins, system-ui, Arial;
-  background:linear-gradient(180deg,#07102a 0%, #07102a 70%, #021018 100%);
-  color:var(--white);
-  -webkit-font-smoothing:antialiased
-}
-.container{max-width:1200px;margin:24px auto;padding:0 18px}
-.header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
-.logo{font-weight:800;color:var(--accent);font-size:20px}
-.top-nav a{color:var(--white);text-decoration:none;margin-left:18px;font-weight:600;opacity:0.95}
+  :root{
+    --bg:#0f1020; --accent1:#e91e63; --accent2:#ff80ab; --accent3:#9c27b0;
+    --neon:#ccff00; --text:#f9f9f9; --muted:#c7b9c9; --card:#13121a;
+    --max-content-width:1200px;
+  }
 
-/* Hero */
-.hero{margin-top:12px;position:relative;overflow:hidden;border-radius:12px;padding:30px;background:linear-gradient(90deg, rgba(10,102,255,0.06), rgba(204,255,0,0.02));}
-.hero-inner{display:flex;align-items:center;gap:28px}
-.hero-left{flex:1}
-.hero-left h1{font-size:64px;line-height:0.9;margin:0;font-weight:900;letter-spacing:-2px}
-.hero-left .highlight{background:var(--accent);display:inline-block;padding:6px 12px;transform:rotate(-2deg);color:#000;margin-left:8px}
-.hero-right{width:420px}
+  /* Reset / Base */
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Montserrat',system-ui,Arial,sans-serif}
+  html { scroll-behavior: smooth; }
+  body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.35}
 
-/* Marquee */
-.marquee-wrap{margin-top:18px;padding:8px 0}
-.marquee-item{display:inline-block;margin:0 8px;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-.marquee-item img{height:160px;width:auto;display:block}
+  /* SECTION helper: each major block is full width; inner container centers */
+  .section { width:100%; padding:30px 0; }
+  .container { max-width:var(--max-content-width); margin:0 auto; padding:0 20px; }
 
-/* Wavy line */
-.wavy{position:absolute;left:0;right:0;top:56%;pointer-events:none;opacity:0.9}
-.wavy svg path{stroke:#ccff00;stroke-width:2;fill:none;stroke-dasharray:300;stroke-dashoffset:300;animation:draw 6s linear infinite}
-@keyframes draw{to{stroke-dashoffset:0}}
+  /* header / nav */
+  .header-wrap{position:sticky;top:0;z-index:999;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.06));backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.02)}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;max-width:var(--max-content-width);margin:0 auto}
+  .logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent}
+  nav.primary { display:flex; gap:8px; align-items:center; }
+  nav.primary a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+  nav.primary a:hover, nav.primary a.active{background:rgba(255,255,255,0.02)}
 
-/* Section */
-.section{margin:46px 0}
-.section h2{font-size:22px;margin:8px 0 18px}
-.featured-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
-.featured-left{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.product-card{background:var(--card);padding:10px;border-radius:10px;overflow:hidden;transition:transform .35s ease, box-shadow .35s ease}
-.product-card img{width:100%;height:220px;object-fit:cover;transition:transform .4s ease, filter .4s ease}
-.product-card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
-.product-card:hover img{transform:scale(1.06);filter:brightness(1.05) saturate(1.08)}
-.poster{aspect-ratio:2/3;width:100%;border-radius:8px;overflow:hidden}
-.landscape{aspect-ratio:16/9}
+  /* hamburger for mobile */
+  .hamburger { display:none; width:44px;height:44px;border-radius:8px;border:1px solid rgba(255,255,255,0.04); background:transparent; align-items:center; justify-content:center; cursor:pointer }
+  .hamburger div{width:20px;height:2px;background:var(--text);position:relative}
+  .mobile-nav { display:none; position:absolute; top:64px; right:20px; background:var(--card); border-radius:10px; padding:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6) }
 
-/* Instagram Embed */
-.instagram-embed{background:var(--card);padding:12px;border-radius:10px;min-height:220px}
+  /* Top offer (full width) */
+  .top-offer{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:white;padding:8px;text-align:center;font-weight:700}
 
-/* Filters */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.filter-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px 12px;border-radius:999px;cursor:pointer}
-.filter-btn.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+  /* HERO: full-bleed content under container */
+  .hero.section { padding:18px 0 8px 0; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
+  .hero-inner{width:100%; padding:24px 0; background:transparent}
+  .hero-inner .container { display:block; } /* use container as centering boundary */
 
-/* Grid */
-.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .hero-headline{
+    font-family:'Anton',sans-serif;
+    font-size:56px;
+    line-height:1.02;
+    color:var(--text);
+    letter-spacing:-1px;
+    max-width:100%;
+    word-break:break-word;
+    margin-bottom:8px;
+  }
+  .hero-headline .highlight{
+    display:inline-block;
+    background:var(--neon);
+    color:#050505;
+    padding:6px 10px;
+    transform:skewX(-8deg) translateY(-6px);
+    margin-left:6px;
+    border-radius:6px;
+  }
+  .hero-sub{color:var(--muted);font-size:15px;max-width:100%}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .btn{padding:10px 18px;border-radius:26px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white}
+  .btn-outline{background:transparent;border:2px solid var(--accent2);color:var(--accent2)}
 
-/* Fade-in animation */
-.fade-in{opacity:0;transform:translateY(16px);transition:all .6s cubic-bezier(.2,.9,.3,1)}
-.fade-in.show{opacity:1;transform:none}
+  .promo-row{margin-top:8px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  #promoLoop{font-weight:800}
 
-@media (max-width:920px){
-  .hero-left h1{font-size:38px}
-  .featured-grid{grid-template-columns:1fr;gap:12px}
-  .hero-right{width:100%}
-  .marquee-item img{height:120px}
-}
+  /* HERO CARDS (three images) */
+  .hero-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+  .hero-card{background:var(--card);border-radius:12px;overflow:hidden;position:relative;min-height:160px;display:flex;flex-direction:column}
+  .hero-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
+  .hero-card .meta{padding:8px;color:var(--muted);font-size:13px}
+  .hero-card .buy-wrap{position:absolute;right:12px;bottom:12px}
+
+  /* scrolling strip styles */
+  .scrolling-strip .scroller{display:flex;gap:12px;align-items:center;padding:8px 0;transform:translateX(0);will-change:transform}
+  .strip-card{min-width:220px;height:120px;border-radius:12px;overflow:hidden;background:var(--card);flex-shrink:0;position:relative}
+  .strip-card img{width:100%;height:100%;object-fit:cover}
+  .strip-card .buy-wrap{position:absolute;right:8px;bottom:8px}
+
+  /* Controls & Gallery */
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+  .filter-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 14px;border-radius:30px;color:var(--text);cursor:pointer}
+  .filter-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent3));border:none;color:white}
+
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;align-items:start}
+  .poster-card{border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:block}
+  .poster-card img{width:100%;height:100%;display:block;object-fit:cover}
+  .poster-card .meta{position:absolute;left:12px;top:12px;background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;font-size:13px}
+  .poster-card .buy-wrap{position:absolute;right:12px;bottom:12px}
+
+  /* pagination styling */
+  .pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin:18px 0}
+  .page-btn{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.08);
+    padding:8px 12px;
+    border-radius:8px;
+    color:var(--text);
+    cursor:pointer;
+    min-width:40px;
+    text-align:center;
+    font-weight:700;
+  }
+  .page-btn:hover{background:rgba(255,255,255,0.03)}
+  .page-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0; box-shadow: 0 8px 20px rgba(156,39,176,0.12)}
+
+  /* product/combo/custom-print/frames */
+  .product, .combo-section, .features, .reviews, .policy, .shipping, .faq {background:var(--card);border-radius:12px;padding:20px;margin:30px 0}
+  .combo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .combo-item{position:relative;border-radius:8px;overflow:hidden}
+  .combo-item img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* custom-print responsive improvements (requested) */
+  .custom-print{display:flex;gap:22px;align-items:flex-start;padding:20px;border-radius:14px;background:linear-gradient(90deg, rgba(14,78,71,0.06), rgba(21,31,42,0.02));flex-wrap:wrap}
+  .custom-print .left{flex:1 1 360px;min-width:260px}
+  .custom-print .right{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
+  .custom-print .fancy-title{font-family:'Anton', sans-serif;font-size:26px;background: linear-gradient(90deg,#00C6A7,#006E6A);-webkit-background-clip:text;color:transparent;margin-bottom:8px}
+  .custom-print .custom-desc{color:var(--muted);line-height:1.5; margin-bottom:10px}
+  /* larger tap targets on mobile */
+  .custom-print .contact-cta{display:flex;gap:10px;flex-wrap:wrap}
+  .custom-print .contact-cta .btn{padding:12px 18px;border-radius:12px;font-weight:800}
+
+  /* frame gallery */
+  .frame-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+  .frame-wrap{position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));min-height:260px;display:flex;align-items:center;justify-content:center}
+  .frame-wrap img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+  .frame-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .frame{box-sizing:content-box;width:100%;height:100%;border-radius:10px}
+  .frame.black{border:10px solid #000;border-radius:10px}
+  .frame.white{border:8px solid #fff;border-radius:10px;opacity:0.95}
+  .frame-wrap .buy-wrap{position:absolute;right:12px;bottom:12px}
+
+  /* contact (no call) */
+  .contact { display:flex; gap:12px; align-items:center; padding:18px; border-radius:12px; background:var(--card) }
+  .contact a, .contact button { color:var(--accent2); text-decoration:none; font-weight:700; background:transparent; border:0; cursor:pointer }
+
+  /* lightbox */
+  #lightbox { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; }
+  #lightbox.active { display: flex; }
+  #lightbox .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.95); }
+  #lightbox .content { position: relative; max-width: 900px; width: 92%; margin: 20px; z-index: 2; text-align: center; color: #fff; }
+  #lightbox img { width: 100%; max-height: 65vh; object-fit:contain; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+  #lightbox .desc { margin-top: 10px; color: #fff; font-size: 14px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; max-height: 22vh; overflow:auto; }
+  #lightbox .close { position: absolute; right: -12px; top: -12px; background: rgba(255,255,255,0.06); color: #fff; border-radius: 50%; width:44px; height:44px; display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px; }
+  #lightbox .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; left: 0; z-index: 3; display:flex;justify-content:space-between;pointer-events:none; }
+  #lightbox .nav button { pointer-events:auto; background: rgba(255,255,255,0.04); border:0; color:#fff; width:48px; height:48px; border-radius:50%; cursor:pointer; }
+
+  /* buy button */
+  .buy-btn{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700}
+
+  /* responsive/mobile */
+  @media(max-width:1100px){
+    .hero-headline{font-size:44px}
+    .frame-wrap{min-height:220px}
+    .custom-print .right{flex:0 0 260px}
+  }
+  @media(max-width:880px){
+    .hero-headline{font-size:36px}
+    .hero-cards{grid-template-columns:repeat(2,1fr)}
+    .frame-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .hamburger{display:flex}
+    nav.primary{display:none}
+    .mobile-nav{display:none}
+    /* custom print: stack left + right for mobile */
+    .custom-print{flex-direction:column;align-items:flex-start}
+    .custom-print .right{width:100%;flex:1}
+    .custom-print .left{width:100%}
+    .custom-print .contact-cta{width:100%;justify-content:flex-start}
+  }
+  @media(max-width:560px){
+    .hero-headline{font-size:28px}
+    .hero-cards{grid-template-columns:repeat(1,1fr)}
+    .frame-gallery{grid-template-columns:repeat(1,minmax(0,1fr))}
+    .strip-card{min-width:160px;height:100px}
+    .hero-card img{height:120px}
+    .hero-card{min-height:140px}
+    .contact{flex-direction:column;align-items:flex-start}
+    .custom-print .right{display:block}
+  }
+  @media(prefers-reduced-motion: reduce){
+    * { animation: none !important; transition: none !important; }
+  }
+
 </style>
 </head>
 <body>
-<div class="container">
-  <header class="header">
-    <div class="logo">OKURIMONO<span style="color:#fff">IN</span></div>
-    <nav class="top-nav">
-      <a href="#">Catalog</a>
-      <a href="#">Login</a>
-      <a href="#">Register</a>
-    </nav>
+
+  <!-- top offer full width -->
+  <div class="top-offer">🎉 Limited Offer — 6 Premium A4 Posters for ₹259 (was ₹299)! Free Delivery & COD (T&C apply) 🎉</div>
+
+  <!-- header -->
+  <header class="header-wrap">
+    <div class="header-inner">
+      <div class="logo">Okurimono.in</div>
+
+      <!-- primary nav (desktop) -->
+      <nav class="primary" id="navPrimary">
+        <a href="#gallery" data-target="gallery">Gallery</a>
+        <a href="#product" data-target="product">Product</a>
+        <a href="#frameGallerySection" data-target="frameGallerySection">Frames</a>
+        <a href="#contact" data-target="contact">Contact</a>
+      </nav>
+
+      <!-- hamburger (mobile) -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><div></div></button>
+      </div>
+
+      <!-- mobile menu (rendered by JS) -->
+      <div id="mobileNav" class="mobile-nav" aria-hidden="true"></div>
+    </div>
   </header>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- HERO - full width -->
+  <section class="section hero" id="hero">
     <div class="hero-inner">
-      <div class="hero-left">
-        <h1>COLLECT<br/><span class="highlight">POSTERS & FRAMES</span><br/>FOR YOU</h1>
-        <p style="color:var(--muted);margin-top:12px">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
-        <div class="marquee-wrap">
-          <marquee behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop()" onmouseout="this.start()">
-            <div class="marquee-item"><img src="/placeholder.jpg" alt=""></div>
-            <div class="marquee-item"><img src="/placeholder.jpg" alt=""></div>
-            <div class="marquee-item"><img src="/placeholder.jpg" alt=""></div>
-            <div class="marquee-item"><img src="/placeholder.jpg" alt=""></div>
-          </marquee>
+      <div class="container">
+        <h1 class="hero-headline">
+          <span>COLLECT</span>
+          <span class="highlight">POSTERS & FRAMES</span>
+          <div style="display:block">FOR YOU</div>
+        </h1>
+
+        <p class="hero-sub">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
+
+        <div class="cta-row">
+          <a class="btn btn-outline" href="#gallery">Explore</a>
+          <button class="btn btn-primary" id="customizeBtn">Customize</button>
         </div>
+
+        <div class="promo-row" style="margin-top:10px">
+          <span style="color:var(--muted)">Trending:</span>
+          <span id="promoLoop">Limited Drops</span>
+        </div>
+
+        <div class="hero-cards" id="heroCards"></div>
       </div>
-      <aside class="hero-right">
-        <div style="font-weight:800;font-size:18px">Latest Drops</div>
-        <div style="margin-top:10px;color:var(--muted)">Featured designs & curated gifts</div>
-        <div style="margin-top:16px">
-          <button class="filter-btn active" data-cat="">All</button>
-          <button class="filter-btn" data-cat="posters">Posters</button>
-          <button class="filter-btn" data-cat="frames">Frames</button>
-          <button class="filter-btn" data-cat="gifts">Gifts</button>
-        </div>
-      </aside>
-    </div>
-    <div class="wavy" aria-hidden="true">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" style="width:100%;height:120px">
-        <path d="M0,40 C200,120 400,0 600,40 C800,80 1000,20 1200,40" stroke-linecap="round"></path>
-      </svg>
     </div>
   </section>
 
-  <!-- Featured + Instagram -->
+  <!-- scrolling strip (uses separate JS array) -->
+  <section class="section scrolling-strip">
+    <div class="container">
+      <div class="scroller" id="autoScroller"></div>
+    </div>
+  </section>
+
+  <!-- controls -->
   <section class="section">
-    <h2>Featured</h2>
-    <div class="featured-grid">
-      <div class="featured-left">
-        <div class="product-card poster fade-in" data-cat="posters">
-          <img src="/placeholder.jpg" alt="Sunset Poster">
-          <div style="padding:8px"><strong>Sunset Poster</strong><div style="color:var(--muted);font-size:13px">A4 portrait — premium print</div></div>
-        </div>
-        <div class="product-card landscape fade-in" data-cat="frames">
-          <img src="/placeholder.jpg" alt="Minimal Frame">
-          <div style="padding:8px"><strong>Minimal Frame</strong><div style="color:var(--muted);font-size:13px">Landscape — ready to hang</div></div>
-        </div>
-        <div class="product-card poster fade-in" data-cat="gifts">
-          <img src="/placeholder.jpg" alt="Gift Print">
-          <div style="padding:8px"><strong>Gift Print</strong><div style="color:var(--muted);font-size:13px">Special edition gift</div></div>
-        </div>
-      </div>
-
-      <div class="instagram-embed">
-        <h3 style="margin-top:0">Instagram Reviews</h3>
-        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/CG0UU3sH1zM/" data-instgrm-version="14" style="background:#fff;padding:0;border-radius:8px;overflow:hidden">
-          <a href="https://www.instagram.com/p/CG0UU3sH1zM/" target="_blank" rel="noopener">View on Instagram</a>
-        </blockquote>
-        <script async src="//www.instagram.com/embed.js"></script>
+    <div class="container">
+      <div class="controls" id="controls">
+        <button class="filter-btn active" data-cat="">All</button>
+        <button class="filter-btn" data-cat="anime">Anime</button>
+        <button class="filter-btn" data-cat="cars">Cars</button>
+        <button class="filter-btn" data-cat="music">Music</button>
+        <button class="filter-btn" data-cat="quotes">Quotes</button>
       </div>
     </div>
   </section>
 
-  <!-- Catalog + Filters -->
-  <section class="section">
-    <h2>Catalog</h2>
-
-    <div class="filters" id="filters">
-      <!-- JS will create filter buttons (keeps them in sync) -->
-    </div>
-
-    <div class="products-grid" id="products">
-      <!-- populated by JS -->
+  <!-- GALLERY -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <div id="galleryGrid" class="gallery-grid" role="list"></div>
+      <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
     </div>
   </section>
 
-  <footer style="padding:30px 0;text-align:center;color:var(--muted)">© OkurimonoIN</footer>
-</div>
+  <!-- PRODUCT -->
+  <section class="section" id="product">
+    <div class="container">
+      <div id="productInner" class="product"></div>
+    </div>
+  </section>
 
-<script>
-/* ========= Data =========
-   Replace this with real API fetch if desired.
-*/
-const PRODUCTS = [
-  { id:'p1', name:'Sunset Poster', price:199, category:'posters', orientation:'portrait', images:['https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.amazon.in%2FTallenge-Joaquin-Phoenix-Hollywood-Multicolour%2Fdp%2FB083737RWH&psig=AOvVaw0IluX0wY43s7-p-rVKzcFW&ust=1761213720718000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLiQzsPGt5ADFQAAAAAdAAAAABAL'] },
-  { id:'p2', name:'Minimal Frame', price:499, category:'frames', orientation:'landscape', images:['/placeholder.jpg'] },
-  { id:'p3', name:'Gift Print', price:799, category:'gifts', orientation:'portrait', images:['/placeholder.jpg'] },
-  { id:'p4', name:'Modern Poster', price:249, category:'posters', orientation:'portrait', images:['/placeholder.jpg'] },
-  { id:'p5', name:'Classic Frame', price:349, category:'frames', orientation:'landscape', images:['/placeholder.jpg'] }
-];
+  <!-- COMBOS -->
+  <section class="section" id="combos">
+    <div class="container">
+      <h3 id="combo-heading">Combo Offers</h3>
+      <p style="color:var(--muted)">Mix & match portrait and landscape posters in your 6-poster combo.</p>
+      <div id="comboGrid" class="combo-grid" role="list"></div>
+    </div>
+  </section>
 
-/* ========= Render (Featured cards already in HTML, but Filter should affect them too) ========= */
-function renderProducts(items){
-  const container = document.getElementById('products');
-  container.innerHTML = '';
-  items.forEach(p=>{
-    const el = document.createElement('article');
-    el.className = 'product-card ' + (p.orientation==='portrait' ? 'poster' : 'landscape') + ' fade-in';
-    el.dataset.cat = p.category;
-    el.innerHTML = `
-      <img src="${p.images[0]||'/placeholder.jpg'}" alt="${escapeHtml(p.name)}">
-      <div style="padding:10px;display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong>${escapeHtml(p.name)}</strong>
-          <div style="color:var(--muted);font-size:13px">${p.orientation==='portrait' ? 'A4 portrait' : 'Landscape'}</div>
+  <!-- CUSTOM PRINT (mobile-friendly) -->
+  <section class="section custom-print" id="customPrint">
+    <div class="container" style="display:flex;align-items:flex-start;gap:20px">
+      <div class="left">
+        <div class="fancy-title">Custom Printed Frames for Special Occasions</div>
+        <p class="custom-desc">Celebrate birthdays, anniversaries and memories with a framed poster. We print on Kodak 180 GSM, finish and frame to gift-ready standards — secure packaging and preview before dispatch.</p>
+        <div class="contact-cta" style="margin-top:8px">
+          <button class="btn btn-primary" id="customWhatsAppBtn">Message for Custom Order</button>
+          <a class="btn btn-outline" href="#contact">Contact</a>
         </div>
-        <div style="font-weight:700">₹${p.price}</div>
       </div>
-    `;
-    container.appendChild(el);
-  });
-  setupFadeObserver();
-}
+      <div class="right">
+        <div class="custom-frame" id="customFrameDemo" style="position:relative">
+          <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
+          <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn" data-id="frame-demo" data-title="Birthday Frame">Buy</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-/* ========= Apply Category Filter to ALL product-cards (featured + catalog) ========= */
-function applyFilter(cat){
-  const all = document.querySelectorAll('.product-card');
-  all.forEach(card => {
-    const c = card.dataset.cat || '';
-    card.style.display = (!cat || c === cat) ? '' : 'none';
-  });
+  <!-- FRAME GALLERY -->
+  <section class="section" id="frameGallerySection">
+    <div class="container">
+      <h3 style="margin-bottom:12px">Frame Gallery (Preview frames over posters)</h3>
+      <div id="frameGrid" class="frame-gallery"></div>
+    </div>
+  </section>
 
-  // Also update active classes on filter controls in hero and catalog filters
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cat === (cat || '') );
-  });
-}
+  <!-- REVIEWS -->
+  <section class="section reviews" id="reviews">
+    <div class="container">
+      <h3>Customer Reviews & Instagram</h3>
+      <div style="display:grid;gap:10px;margin-top:10px">
+        <div style="background:var(--card);padding:12px;border-radius:10px">“Great colors and quick delivery — Sayan”</div>
+        <div style="background:var(--card);padding:12px;border-radius:10px">“Perfect gift for birthday — Ananya”</div>
+      </div>
+    </div>
+  </section>
 
-/* ========= Filter buttons initial sync: hero buttons + dynamic list ========= */
-function initFilters(){
-  // gather unique categories from PRODUCTS plus those used in featured existing HTML
-  const set = new Set(PRODUCTS.map(p=>p.category));
-  // Also collect categories that appear as data-cat in existing featured cards
-  document.querySelectorAll('.featured-left .product-card').forEach(c => {
-    if(c.dataset.cat) set.add(c.dataset.cat);
-  });
+  <!-- POLICY -->
+  <section class="section policy">
+    <div class="container">
+      <h3>Payment, COD & Return Policy</h3>
+      <p style="color:var(--muted)"><strong>Prepaid:</strong> Instant confirmation via UPI/PhonePe/Paytm. Custom orders may request a small ₹50 advance.</p>
+      <p style="color:var(--muted)"><strong>COD:</strong> COD available with handling fee (e.g., ₹90). Full COD-only bundles may be priced higher (e.g., ₹350).</p>
+      <p style="color:var(--muted)"><strong>Returns:</strong> Record an unboxing video at delivery. Report damage within 48 hours with video & photos; we will replace damaged items at no extra cost.</p>
+    </div>
+  </section>
 
-  const filters = document.getElementById('filters');
-  filters.innerHTML = '';
+  <!-- SHIPPING -->
+  <section class="section shipping">
+    <div class="container">
+      <h3>Shipping</h3>
+      <p style="color:var(--muted)">Free delivery PAN India via DTDC or equivalent. Delivery estimate: 5–6 working days after dispatch.</p>
+    </div>
+  </section>
 
-  // Add "All"
-  const allBtn = createFilterBtn('', 'All');
-  filters.appendChild(allBtn);
+  <!-- CONTACT: NO CALL - leave a WhatsApp message -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="contact">
+        <div class="col">
+          <h3>Contact Us</h3>
+          <p style="color:var(--muted)">Please do not call — <strong>leave us a WhatsApp message</strong> and we'll reply quickly.</p>
+          <p><strong>WhatsApp:</strong>
+            <button class="buy-btn" id="contactWhatsAppBtn">Message on WhatsApp</button>
+          </p>
+          <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
+        </div>
+        <div class="col" style="min-width:220px">
+          <p style="color:var(--muted)">Business Hours</p>
+          <p>Mon — Sat: 10:00 — 18:00</p>
+          <p>Sun: Closed</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  // Add from set
-  Array.from(set).forEach(cat=>{
-    const label = cat.charAt(0).toUpperCase() + cat.slice(1);
-    const b = createFilterBtn(cat, label);
-    filters.appendChild(b);
-  });
+  <footer class="section" style="padding-top:8px;padding-bottom:20px">
+    <div class="container" style="text-align:center;color:var(--muted)">© Okurimono.in • DM @okurimono.in</div>
+  </footer>
 
-  // Wire hero buttons to trigger the same filter behavior
-  document.querySelectorAll('.hero-right .filter-btn').forEach(hb=>{
-    hb.addEventListener('click', ()=> {
-      const cat = hb.dataset.cat;
-      applyFilter(cat);
-      // keep hero controls visually in sync
-      document.querySelectorAll('.hero-right .filter-btn').forEach(x=>x.classList.remove('active'));
-      hb.classList.add('active');
-    });
-  });
+  <!-- LIGHTBOX -->
+  <div id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
+    <div class="backdrop" id="lbBackdrop"></div>
+    <div class="content" role="document" id="lbContent">
+      <button class="close" id="lbClose" aria-label="Close">×</button>
+      <div class="nav">
+        <button id="lbPrev" aria-label="Previous">‹</button>
+        <button id="lbNext" aria-label="Next">›</button>
+      </div>
+      <img src="" alt="" id="lbImage">
+      <div class="desc" id="lbDesc"></div>
+    </div>
+  </div>
 
-  // Also add click handlers to catalog buttons (created here)
-  filters.querySelectorAll('.filter-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> {
-      const cat = btn.dataset.cat;
-      applyFilter(cat);
-      // sync hero controls too
-      document.querySelectorAll('.hero-right .filter-btn').forEach(x=>x.classList.remove('active'));
-      const heroMatching = document.querySelector('.hero-right .filter-btn[data-cat="'+cat+'"]');
-      if(heroMatching) heroMatching.classList.add('active');
-    });
-  });
-}
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-function createFilterBtn(cat, label){
-  const btn = document.createElement('button');
-  btn.className = 'filter-btn' + (cat === '' ? ' active' : '');
-  btn.dataset.cat = cat;
-  btn.textContent = label;
-  return btn;
-}
+  <script>
+    /******************************
+     * Data + Config
+     ******************************/
+    const heroUploadedImages = [
+      '/mnt/data/d0f60b4e-88a4-4e7d-a465-1b657139c526.png',
+      '/mnt/data/03304bd0-deca-48e7-a729-5079225054e1.png',
+      '/mnt/data/326f1b7c-c663-4878-afe5-7238e68f55af.png'
+    ];
 
-/* ========= Fade-in observer ========= */
-let observer;
-function setupFadeObserver(){
-  const items = document.querySelectorAll('.fade-in');
-  if(!observer){
-    observer = new IntersectionObserver((entries)=>{
-      entries.forEach(entry => {
-        if(entry.isIntersecting) entry.target.classList.add('show');
+    // main gallery posters (independent from scrolling strip)
+    const posters = [
+      {id:1, src:'https://picsum.photos/seed/an1/420/600', title:'Anime Sunset', cat:'anime'},
+      {id:2, src:'https://picsum.photos/seed/car1/600/350', title:'Speed Machine', cat:'cars'},
+      {id:3, src:'https://picsum.photos/seed/m1/420/600', title:'Beat Drops', cat:'music'},
+      {id:4, src:'https://picsum.photos/seed/q1/420/600', title:'Motivational Quote', cat:'quotes'},
+      {id:5, src:'https://picsum.photos/seed/car2/600/350', title:'Classic Ride', cat:'cars'},
+      {id:6, src:'https://picsum.photos/seed/an2/420/600', title:'Neon Warrior', cat:'anime'},
+      {id:7, src:'https://picsum.photos/seed/extra1/420/600', title:'Extra 1', cat:'music'},
+      {id:8, src:'https://picsum.photos/seed/extra2/600/350', title:'Extra 2', cat:'cars'},
+      {id:9, src:'https://picsum.photos/seed/extra3/420/600', title:'Extra 3', cat:'quotes'},
+      {id:10, src:'https://picsum.photos/seed/extra4/420/600', title:'Extra 4', cat:'anime'}
+    ];
+
+    // NEW: scrolling strip posters — different list and repeatable
+    const scrollingPosters = [
+      {id:'s1', src:'https://picsum.photos/seed/strip1/420/260', title:'Strip Poster 1'},
+      {id:'s2', src:'https://picsum.photos/seed/strip2/420/260', title:'Strip Poster 2'},
+      {id:'s3', src:'https://picsum.photos/seed/strip3/420/260', title:'Strip Poster 3'},
+      {id:'s4', src:'https://picsum.photos/seed/strip4/420/260', title:'Strip Poster 4'},
+      {id:'s5', src:'https://picsum.photos/seed/strip5/420/260', title:'Strip Poster 5'}
+    ];
+
+    const combos = [
+      {id:'c1', src:'https://picsum.photos/seed/c1/400/600', title:'Combo 1'},
+      {id:'c2', src:'https://picsum.photos/seed/c2/400/600', title:'Combo 2'},
+      {id:'c3', src:'https://picsum.photos/seed/c3/600/400', title:'Combo 3'}
+    ];
+
+    const framesData = [
+      {id:'f1', src:'https://picsum.photos/seed/f1/600/800', title:'Framed Black', frameType:'black'},
+      {id:'f2', src:'https://picsum.photos/seed/f2/600/800', title:'Framed White', frameType:'white'},
+      {id:'f3', src:'https://picsum.photos/seed/f3/600/800', title:'Framed Black 2', frameType:'black'}
+    ];
+
+    const WA_PHONE = '918617743811'; // whatsapp number used by buy buttons
+
+    /******************************
+     * DOM refs
+     ******************************/
+    const heroCardsEl = document.getElementById('heroCards');
+    const scrollerEl = document.getElementById('autoScroller');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const paginationEl = document.getElementById('pagination');
+    const comboGrid = document.getElementById('comboGrid');
+    const frameGrid = document.getElementById('frameGrid');
+    const promoLoopEl = document.getElementById('promoLoop');
+    const productInner = document.getElementById('productInner');
+    const mobileNav = document.getElementById('mobileNav');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const contactWhatsAppBtn = document.getElementById('contactWhatsAppBtn');
+    const customWhatsAppBtn = document.getElementById('customWhatsAppBtn');
+
+    /******************************
+     * Helpers
+     ******************************/
+    function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    /******************************
+     * Renderers
+     ******************************/
+    function renderHeroImages(){
+      heroCardsEl.innerHTML = heroUploadedImages.map((src,i)=>`
+        <div class="hero-card" data-idx="${i}">
+          <img src="${esc(src)}" alt="Featured ${i+1}">
+          <div class="meta">Featured design ${i+1}</div>
+          <div class="buy-wrap"><button class="buy-btn" data-id="hero-${i}" data-title="Featured design ${i+1}">Buy</button></div>
+        </div>
+      `).join('');
+    }
+
+    // NEW: renderScrollingStrip uses scrollingPosters array
+    function renderScrollingStrip(){
+      // create two copies to give continuous feel
+      const items = scrollingPosters.concat(scrollingPosters);
+      scrollerEl.innerHTML = items.map(p=>`
+        <div class="strip-card">
+          <img src="${esc(p.src)}" alt="${esc(p.title)}">
+          <div class="buy-wrap"><button class="buy-btn" data-id="${esc(p.id)}" data-title="${esc(p.title)}">Buy</button></div>
+        </div>`).join('');
+    }
+
+    const ITEMS_PER_PAGE = 8;
+    let activeCategory = '';
+    let currentPage = 1;
+
+    function paginate(arr,page=1,per=ITEMS_PER_PAGE){
+      const pages = Math.max(1, Math.ceil(arr.length/per));
+      const start = (page-1)*per;
+      return { items: arr.slice(start,start+per), pages };
+    }
+
+    function renderGallery(page=1){
+      currentPage = page;
+      const filtered = activeCategory ? posters.filter(p=>p.cat===activeCategory) : posters.slice();
+      const { items, pages } = paginate(filtered, page);
+      galleryGrid.innerHTML = items.map(p=>`
+        <div class="poster-card" data-id="${p.id}">
+          <img src="${esc(p.src)}" alt="${esc(p.title)}" data-title="${esc(p.title)}">
+          <div class="meta">${esc(p.title)}</div>
+          <div class="buy-wrap"><button class="buy-btn" data-id="${p.id}" data-title="${esc(p.title)}">Buy</button></div>
+        </div>`).join('');
+      renderPagination(pages,page);
+      bindInteractiveElements();
+    }
+
+    function renderPagination(pages,active){
+      paginationEl.innerHTML = '';
+      if(pages <= 1) return;
+      const prev = document.createElement('button'); prev.className='page-btn'; prev.innerText='Prev'; prev.disabled = active<=1;
+      prev.addEventListener('click', ()=> renderGallery(Math.max(1, active-1)));
+      paginationEl.appendChild(prev);
+      for(let i=1;i<=pages;i++){
+        const b = document.createElement('button'); b.className = 'page-btn' + (i===active? ' active':''); b.innerText=i;
+        b.addEventListener('click', ()=> renderGallery(i));
+        paginationEl.appendChild(b);
+      }
+      const next = document.createElement('button'); next.className='page-btn'; next.innerText='Next'; next.disabled = active>=pages;
+      next.addEventListener('click', ()=> renderGallery(Math.min(pages, active+1)));
+      paginationEl.appendChild(next);
+    }
+
+    function renderCombos(){
+      comboGrid.innerHTML = combos.map(c=>`
+        <div class="combo-item" data-id="${esc(c.id)}">
+          <img src="${esc(c.src)}" alt="${esc(c.title)}">
+          <div style="position:absolute;left:8px;top:8px;background:rgba(0,0,0,0.35);padding:6px;border-radius:8px">${esc(c.title)}</div>
+          <div style="position:absolute;right:8px;bottom:8px"><button class="buy-btn" data-id="${esc(c.id)}" data-title="${esc(c.title)}">Buy</button></div>
+        </div>`).join('');
+    }
+
+    function renderFrames(){
+      frameGrid.innerHTML = framesData.map(f=>`
+        <div class="frame-wrap" data-id="${esc(f.id)}">
+          <img src="${esc(f.src)}" alt="${esc(f.title)}">
+          <div class="frame-overlay"><div class="frame ${esc(f.frameType)}"></div></div>
+          <div class="buy-wrap"><button class="buy-btn" data-id="${esc(f.id)}" data-title="${esc(f.title)}">Buy</button></div>
+        </div>`).join('');
+    }
+
+    function renderMainProduct(){
+      const title = '6-Poster Combo — A4 — Kodak 180 GSM';
+      const desc = 'Choose any 6 designs from our gallery or our combos. Printed on Kodak 180 GSM highlight paper for vivid color and long life.';
+      productInner.innerHTML = `
+        <div class="product">
+          <h2>${esc(title)}</h2>
+          <p style="color:var(--muted)">${esc(desc)}</p>
+          <ul style="color:var(--muted)">
+            <li>A4 size (8.3” × 11.7”)</li>
+            <li>Matte finish option</li>
+            <li>5–6 day delivery</li>
+          </ul>
+          <div style="margin-top:10px"><button class="btn btn-primary buy-main" data-title="${esc(title)}">Buy Combo</button></div>
+        </div>`;
+    }
+
+    /******************************
+     * Lightbox + Interaction binding
+     ******************************/
+    let clickableItems = [];
+    let lbCurrentIndex = -1;
+
+    function bindInteractiveElements(){
+      clickableItems = Array.from(document.querySelectorAll('.gallery-grid img, .combo-grid img, .frame-wrap img, .hero-card img, .strip-card img'))
+        .map(img => ({el: img, src: img.getAttribute('src'), title: img.dataset.title || img.getAttribute('alt') || ''}));
+
+      clickableItems.forEach((it, idx)=>{
+        it.el.style.cursor = 'zoom-in';
+        it.el.onclick = (e)=> { e.stopPropagation(); openLightboxByEl(it.el); };
       });
-    }, { threshold: 0.12 });
-  }
-  items.forEach(i => observer.observe(i));
-}
 
-/* ========= Helper ========= */
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+      // buy buttons -> whatsapp
+      document.querySelectorAll('.buy-btn').forEach(btn=>{
+        btn.onclick = (e)=>{
+          e.stopPropagation();
+          const id = btn.dataset.id || '';
+          const title = btn.dataset.title || 'Poster';
+          sendWhatsAppMessage(title, id);
+        };
+      });
 
-/* ========= Init ========= */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // render catalog
-  renderProducts(PRODUCTS);
+      // main combo buy
+      document.querySelectorAll('.buy-main').forEach(b=>{
+        b.onclick = ()=> sendWhatsAppMessage(b.dataset.title || '6-Poster Combo', 'combo-main');
+      });
+    }
 
-  // init filter controls and link them to behavior
-  initFilters();
+    // Lightbox functions
+    const lightboxEl = document.getElementById('lightbox');
+    const lbBackdropEl = document.getElementById('lbBackdrop');
+    const lbContentEl = document.getElementById('lbContent');
+    const lbImageEl = document.getElementById('lbImage');
+    const lbDescEl = document.getElementById('lbDesc');
+    const lbCloseEl = document.getElementById('lbClose');
+    const lbPrevEl = document.getElementById('lbPrev');
+    const lbNextEl = document.getElementById('lbNext');
 
-  // setup fade observer for featured items already present
-  setupFadeObserver();
+    function openLightboxByEl(el){
+      const idx = clickableItems.findIndex(it=> it.el === el);
+      if(idx !== -1) openLightbox(idx);
+    }
+    function openLightbox(index){
+      if(index < 0 || index >= clickableItems.length) return;
+      lbCurrentIndex = index;
+      const it = clickableItems[index];
+      lbImageEl.src = it.src;
+      lbImageEl.alt = it.title || '';
+      lbDescEl.innerHTML = `<strong style="display:block;margin-bottom:6px">${esc(it.title)}</strong>`;
+      lightboxEl.setAttribute('aria-hidden','false');
+      lightboxEl.classList.add('active');
+      gsap.fromTo('#lightbox .backdrop',{opacity:0},{opacity:1,duration:0.28});
+      gsap.fromTo('#lbContent',{y:30,opacity:0},{y:0,opacity:1,duration:0.36});
+    }
+    function closeLightbox(){
+      lightboxEl.setAttribute('aria-hidden','true');
+      gsap.to('#lbContent',{y:20,opacity:0,duration:0.22});
+      gsap.to('#lightbox .backdrop',{opacity:0,duration:0.22,onComplete:()=>{ lightboxEl.classList.remove('active'); lbImageEl.src=''; lbCurrentIndex=-1;}});
+    }
+    function prevItem(){ if(clickableItems.length===0) return; lbCurrentIndex = (lbCurrentIndex<=0)?clickableItems.length-1:lbCurrentIndex-1; openLightbox(lbCurrentIndex); }
+    function nextItem(){ if(clickableItems.length===0) return; lbCurrentIndex = (lbCurrentIndex>=clickableItems.length-1)?0:lbCurrentIndex+1; openLightbox(lbCurrentIndex); }
 
-  // ensure clicking hero filters also works (hero has its own filter buttons already wired in initFilters)
-  document.querySelectorAll('.hero-right .filter-btn').forEach(b=>{
-    b.addEventListener('click', ()=> {
-      // visually handled in initFilters; also call applyFilter for safety
-      applyFilter(b.dataset.cat);
+    lbCloseEl.addEventListener('click', closeLightbox);
+    lbBackdropEl.addEventListener('click', closeLightbox);
+    lbPrevEl.addEventListener('click', (e)=>{ e.stopPropagation(); prevItem(); });
+    lbNextEl.addEventListener('click', (e)=>{ e.stopPropagation(); nextItem(); });
+    document.addEventListener('keydown', (e)=>{ if(lightboxEl.classList.contains('active')){ if(e.key==='Escape') closeLightbox(); if(e.key==='ArrowLeft') prevItem(); if(e.key==='ArrowRight') nextItem(); }});
+
+    /******************************
+     * WhatsApp send
+     ******************************/
+    function sendWhatsAppMessage(title, id){
+      const base = `Hi I am interested in your poster collection! Poster: ${title} (ID:${id})`;
+      const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
+      window.open(url, '_blank');
+    }
+
+    /******************************
+     * Scroller auto movement & small drag support
+     ******************************/
+    function initAutoScroller(){
+      const scroller = scrollerEl;
+      let pos = 0;
+      const speed = 0.4;
+      let rafId;
+      function step(){
+        pos += speed;
+        if(scroller.scrollWidth > scroller.clientWidth){
+          if(pos >= scroller.scrollWidth/2) pos = 0;
+          scroller.style.transform = `translateX(-${pos}px)`;
+        }
+        rafId = requestAnimationFrame(step);
+      }
+      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        rafId = requestAnimationFrame(step);
+        scroller.addEventListener('mouseenter', ()=> cancelAnimationFrame(rafId));
+        scroller.addEventListener('mouseleave', ()=> { rafId = requestAnimationFrame(step); });
+      }
+      // pointer drag basic
+      let down=false,startX=0,transformX=0;
+      scroller.addEventListener('pointerdown', (e)=>{ down=true; startX=e.clientX; scroller.style.cursor='grabbing'; });
+      scroller.addEventListener('pointermove', (e)=>{ if(!down) return; const dx = e.clientX - startX; scroller.style.transform = `translateX(${transformX + dx}px)`; });
+      scroller.addEventListener('pointerup', ()=>{ down=false; scroller.style.cursor=''; });
+      scroller.addEventListener('pointerleave', ()=>{ down=false; scroller.style.cursor=''; });
+    }
+
+    /******************************
+     * Mobile nav behavior
+     ******************************/
+    function setupMobileNav(){
+      const links = [
+        {label:'Gallery', href:'#gallery'},
+        {label:'Product', href:'#product'},
+        {label:'Frames', href:'#frameGallerySection'},
+        {label:'Contact', href:'#contact'}
+      ];
+      mobileNav.innerHTML = links.map(l=>`<a href="${l.href}" style="display:block;padding:8px 10px;color:var(--text);text-decoration:none">${l.label}</a>`).join('');
+      mobileNav.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const href = a.getAttribute('href').replace('#','');
+          const el = document.getElementById(href);
+          if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+          mobileNav.style.display='none';
+          mobileNav.setAttribute('aria-hidden','true');
+        });
+      });
+
+      hamburgerBtn.addEventListener('click', ()=>{
+        if(mobileNav.style.display === 'block'){ mobileNav.style.display='none'; mobileNav.setAttribute('aria-hidden','true'); }
+        else { mobileNav.style.display='block'; mobileNav.setAttribute('aria-hidden','false'); }
+      });
+    }
+
+    /******************************
+     * Small utilities: update active nav on scroll
+     ******************************/
+    function updateActiveNavOnScroll(){
+      const navLinks = Array.from(document.querySelectorAll('nav.primary a'));
+      const sections = navLinks.map(a => {
+        const id = a.getAttribute('href').replace('#','');
+        return document.getElementById(id);
+      });
+      let lastIndex = 0;
+      const threshold = window.innerHeight * 0.35;
+      sections.forEach((s,i)=>{ if(!s) return; const rect = s.getBoundingClientRect(); if(rect.top <= threshold) lastIndex = i; });
+      navLinks.forEach((a,i)=> a.classList.toggle('active', i===lastIndex));
+    }
+    window.addEventListener('scroll', updateActiveNavOnScroll);
+    window.addEventListener('resize', updateActiveNavOnScroll);
+
+    /******************************
+     * GSAP small animations
+     ******************************/
+    function initGSAP(){
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from('.hero-headline', {opacity:0,y:20,duration:0.6});
+      gsap.from('.hero-sub', {opacity:0,y:12,duration:0.5,delay:0.12});
+      gsap.to('.hero-card img', {scale:1.02, yoyo:true, repeat:-1, duration:5, stagger:0.6});
+      // reveal sections
+      ['#gallery','#product','#combos','#customPrint','#frameGallerySection','#reviews','#contact'].forEach(sel=>{
+        const el = document.querySelector(sel);
+        if(el) gsap.from(el, { scrollTrigger:{trigger:el,start:'top 85%'}, y:20, opacity:0, duration:0.65 });
+      });
+    }
+
+    /******************************
+     * Init on DOMContentLoaded
+     ******************************/
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // render content
+      renderHeroImages();
+      renderScrollingStrip(); // uses scrollingPosters array
+      renderMainProduct();
+      renderCombos();
+      renderFrames();
+      renderGallery(1);
+
+      // bind interactions & start scroller
+      bindInteractiveElements();
+      initAutoScroller();
+      setupMobileNav();
+      initGSAP();
+      updateActiveNavOnScroll();
+
+      // promo loop
+      const promoWords = ['Limited Drops','Free Shipping','Gift-ready Frames','Kodak 180 GSM','COD Available'];
+      let idx=0;
+      setInterval(()=> {
+        idx = (idx+1) % promoWords.length;
+        gsap.to(promoLoopEl, {duration:0.25, opacity:0, y:-6, onComplete(){
+          promoLoopEl.textContent = promoWords[idx];
+          gsap.fromTo(promoLoopEl,{y:6,opacity:0},{y:0,opacity:1,duration:0.35});
+        }});
+      }, 2600);
+
+      // customize button goes to contact
+      document.getElementById('customizeBtn').addEventListener('click', ()=> {
+        document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+      });
+
+      // contact whatsapp button (explicit message)
+      contactWhatsAppBtn.addEventListener('click', ()=> {
+        const base = `Hi I am interested in your poster collection!`;
+        const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
+        window.open(url, '_blank');
+      });
+
+      // custom print whatsapp button
+      if(customWhatsAppBtn){
+        customWhatsAppBtn.addEventListener('click', ()=> {
+          const base = `Hi I want a custom printed frame. Please assist.`;
+          const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
+          window.open(url, '_blank');
+        });
+      }
     });
-  });
-});
-
-/* ========= Parallax for wavy element ========= */
-window.addEventListener('scroll', ()=>{
-  const w = document.querySelector('.wavy');
-  if(!w) return;
-  const sc = window.scrollY;
-  w.style.transform = 'translateY(' + (sc * 0.12) + 'px)';
-});
-</script>
+  </script>
 </body>
 </html>
-
