@@ -170,7 +170,7 @@
   /* buy button */
   .buy-btn{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700}
 
-  /* Payment select black background (requested previously) */
+  /* Payment select black background */
   #paymentMethod { background: #000 !important; color: #fff !important; }
 
   /* responsive/mobile */
@@ -208,7 +208,7 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* small toast */
+  /* toast */
   .toast {
     position: fixed;
     left: 50%;
@@ -622,7 +622,7 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* === Cart logic (modified to allow quantity selection) === */
+/* === Cart logic (quantity selectable; default qty = 1) === */
 
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
@@ -633,7 +633,7 @@ function addToCart(item){
   const id = String(item.id);
   const idx = findCartItemIndex(id);
   if(idx === -1){
-    cart.push({ id, title: item.title, src: item.src, qty: 1 });
+    cart.push({ id, title: item.title, src: item.src, qty: 1 }); // default qty = 1
   } else {
     cart[idx].qty += 1;
   }
@@ -660,7 +660,7 @@ function removeFromCart(id){
 }
 
 /* Pricing rules depend on total items in cart (sum of qtys).
-   Keep the precedence decision you previously accepted: if totalItems >=6 && <=15 => ₹43 (checked first).
+   Precedence: if totalItems >= 6 && <= 15 => 43 (checked first)
 */
 function unitPriceBasedOnTotalItems(totalItems){
   if(totalItems >= 6 && totalItems <= 15) return 43;
@@ -708,7 +708,7 @@ function refreshCartUI(){
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
           <div class="qty-controls">
             <button class="qty-decr" data-id="${esc(it.id)}">-</button>
-            <div style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);min-width:34px;text-align:center" data-count>${it.qty}</div>
+            <input type="number" min="1" value="${it.qty}" data-count-input style="width:52px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text)">
             <button class="qty-incr" data-id="${esc(it.id)}">+</button>
           </div>
           <div style="margin-top:6px;color:var(--muted);font-size:14px">Item total: ₹<span class="item-total">0</span></div>
@@ -726,15 +726,23 @@ function refreshCartUI(){
   advanceNowEl.textContent = totals.advanceNow ? `₹${totals.advanceNow}` : '₹0';
   grandTotalEl.textContent = `₹${(totals.grandTotal).toFixed(0)}`;
 
-  // set item totals per rendered items and bind qty buttons
+  // set item totals per rendered items and bind qty buttons/inputs
   document.querySelectorAll('.cart-item').forEach((el, idx)=>{
     const it = cart[idx];
     const itemTotalEl = el.querySelector('.item-total');
-    const countEl = el.querySelector('[data-count]');
+    const countInput = el.querySelector('[data-count-input]');
     if(itemTotalEl){
       itemTotalEl.textContent = (totals.unitPrice * it.qty).toFixed(0);
     }
-    if(countEl) countEl.textContent = it.qty;
+    if(countInput) countInput.value = it.qty;
+    // input change handler
+    if(countInput) {
+      countInput.addEventListener('change', (e)=>{
+        let v = parseInt(countInput.value) || 1;
+        if(v < 1) v = 1;
+        updateQty(it.id, v);
+      });
+    }
   });
 
   // attach event listeners
@@ -750,8 +758,7 @@ function refreshCartUI(){
       const id = b.dataset.id;
       const idx = findCartItemIndex(id);
       if(idx !== -1){
-        cart[idx].qty = Math.max(0, cart[idx].qty - 1);
-        if(cart[idx].qty === 0) cart.splice(idx,1);
+        cart[idx].qty = Math.max(1, cart[idx].qty - 1); // min qty = 1
         saveCart(); refreshCartUI();
       }
     });
@@ -773,24 +780,45 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
+/* Checkout updated: enforce minimum total items = 3 for delivery.
+   If totalQty < 3 -> alert and block checkout.
+   WhatsApp message: include first cart item's image URL at the top (note: cannot attach file via wa.me,
+   but including URL can produce a preview).
+*/
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
   const totals = computeCartTotals(pm);
-  let msg = `Order from Okurimono.in%0A`;
-  msg += `Payment: ${pm.toUpperCase()}%0A`;
-  msg += `Unit price per item (based on total items ${totals.totalQty}): ₹${totals.unitPrice}%0A`;
-  msg += `Items:%0A`;
+
+  // Enforce minimum cart quantity for delivery
+  if(totals.totalQty < 3){
+    alert('Minimum order is 3 posters for delivery. Please add more items to proceed.');
+    return;
+  }
+
+  // Build message. Include first item's image URL at the top to encourage preview.
+  const firstItem = cart[0];
+  let msgParts = [];
+  if(firstItem && firstItem.src){
+    msgParts.push(`${firstItem.src}`); // plain URL first (may create preview)
+  }
+  msgParts.push(`*Order from Okurimono.in*`);
+  msgParts.push(`Payment: ${pm.toUpperCase()}`);
+  msgParts.push(`Unit price per item (based on total items ${totals.totalQty}): ₹${totals.unitPrice}`);
+  msgParts.push(`Items:`);
   cart.forEach(it => {
-    msg += `- ${encodeURIComponent(it.title)} x ${it.qty} @ ₹${totals.unitPrice} = ₹${totals.unitPrice*it.qty}%0A`;
+    msgParts.push(`• ${it.title} x ${it.qty} @ ₹${totals.unitPrice} = ₹${totals.unitPrice*it.qty}`);
   });
-  msg += `%0ATotal Items: ${totals.totalQty}%0A`;
-  msg += `Items total: ₹${totals.itemsTotal}%0A`;
-  if(totals.codFee) msg += `COD fee: ₹${totals.codFee}%0A`;
-  if(totals.advanceNow) msg += `Advance now: ₹${totals.advanceNow}%0A (Remaining on delivery: ₹${(totals.grandTotal - totals.advanceNow)})%0A`;
-  msg += `Grand total: ₹${totals.grandTotal}%0A`;
-  msg += `%0APlease pack securely. Note: If product damaged on delivery, I will share an unboxing video for replacement.%0A`;
-  const url = `https://wa.me/${WA_PHONE}?text=${msg}`;
+  msgParts.push(`Total Items: ${totals.totalQty}`);
+  msgParts.push(`Items total: ₹${totals.itemsTotal}`);
+  if(totals.codFee) msgParts.push(`COD fee: ₹${totals.codFee}`);
+  if(totals.advanceNow) msgParts.push(`Advance now: ₹${totals.advanceNow} (Remaining on delivery: ₹${(totals.grandTotal - totals.advanceNow)})`);
+  msgParts.push(`Grand total: ₹${totals.grandTotal}`);
+  msgParts.push(`\nPlease pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
+
+  // join and encode
+  const finalMessage = encodeURIComponent(msgParts.join('\n'));
+  const url = `https://wa.me/${WA_PHONE}?text=${finalMessage}`;
   window.open(url, '_blank');
 }
 
@@ -802,7 +830,7 @@ function showToast(text){
   toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
 }
 
-/* === Lightbox + interactions === */
+/* === Lightbox + interactions (kept) === */
 let clickableItems = [];
 let currentIndex = -1;
 
@@ -925,27 +953,24 @@ function setupMobileNav(){
   });
 }
 
-/* GSAP animations optimized with ScrollTrigger.batch for better mobile performance */
+/* GSAP animations (kept as before) */
 function initGSAP(){
   gsap.registerPlugin(ScrollTrigger);
   gsap.defaults({ease:'power1.out'});
 
-  // hero intro
   gsap.from('.hero-headline', {opacity:0,y:30,duration:0.8});
   gsap.from('.hero-sub', {opacity:0,y:20,duration:0.6,delay:0.12});
   gsap.to('.hero-card img', {scale:1.02, yoyo:true, repeat:-1, duration:5, stagger:0.6});
 
-  // Batch animate sections: this uses ScrollTrigger.batch which is lighter than creating many triggers
   const sections = gsap.utils.toArray('.section');
   ScrollTrigger.batch(sections, {
-    interval: 0.12, // how often batch should be processed (in seconds)
-    batchMax: 6,    // max elements to batch
+    interval: 0.12,
+    batchMax: 6,
     onEnter: batch => gsap.fromTo(batch, {y:20, opacity:0}, {y:0, opacity:1, stagger:0.08, duration:0.6, overwrite:true}),
     start: 'top 85%',
     once: false
   });
 
-  // small text loop animation for promo (non-blocking)
   const promoWords = ['Limited Drops','Free Shipping','Gift-ready Frames','Kodak 180 GSM','COD Available'];
   let pIdx = 0;
   setInterval(()=> {
