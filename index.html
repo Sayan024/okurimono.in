@@ -48,15 +48,33 @@
   /* hamburger for mobile */
   .hamburger { display:none; width:44px;height:44px;border-radius:8px;border:1px solid rgba(255,255,255,0.04); background:transparent; align-items:center; justify-content:center; cursor:pointer }
   .hamburger div{width:20px;height:2px;background:var(--text);position:relative}
-  .mobile-nav { display:none; position:absolute; top:64px; right:20px; background:var(--card); border-radius:10px; padding:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6) }
+
+  /* MOBILE NAV - now fixed under header so it remains visible while scrolling */
+  .mobile-nav {
+    display:none;
+    position:fixed;
+    top:64px;            /* below header */
+    left:0;
+    right:0;
+    width:100%;
+    z-index:1100;
+    background:var(--card);
+    border-radius:0;
+    padding:12px 16px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    max-height:calc(100vh - 64px);
+    overflow:auto;
+  }
+  .mobile-nav a{display:block;padding:10px;color:var(--text);text-decoration:none;border-radius:8px}
+  .mobile-nav a:hover{background:rgba(255,255,255,0.02)}
 
   /* Top offer (full width) */
   .top-offer{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:white;padding:8px;text-align:center;font-weight:700}
 
-  /* HERO: full-bleed content under container */
+  /* HERO */
   .hero.section { padding:18px 0 8px 0; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
   .hero-inner{width:100%; padding:24px 0; background:transparent}
-  .hero-inner .container { display:block; } /* use container as centering boundary */
+  .hero-inner .container { display:block; }
 
   .hero-headline{
     font-family:'Anton',sans-serif;
@@ -86,20 +104,18 @@
   .promo-row{margin-top:8px;color:var(--muted);display:flex;gap:8px;align-items:center}
   #promoLoop{font-weight:800}
 
-  /* HERO CARDS (three images) */
+  /* HERO CARDS and other sections (unchanged) */
   .hero-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
   .hero-card{background:var(--card);border-radius:12px;overflow:hidden;position:relative;min-height:160px;display:flex;flex-direction:column}
   .hero-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
   .hero-card .meta{padding:8px;color:var(--muted);font-size:13px}
   .hero-card .buy-wrap{position:absolute;right:12px;bottom:12px}
 
-  /* scrolling strip styles */
   .scrolling-strip .scroller{display:flex;gap:12px;align-items:center;padding:8px 0;transform:translateX(0);will-change:transform}
   .strip-card{min-width:220px;height:120px;border-radius:12px;overflow:hidden;background:var(--card);flex-shrink:0;position:relative}
   .strip-card img{width:100%;height:100%;object-fit:cover}
   .strip-card .buy-wrap{position:absolute;right:8px;bottom:8px}
 
-  /* Controls & Gallery */
   .controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
   .filter-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 14px;border-radius:30px;color:var(--text);cursor:pointer}
   .filter-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent3));border:none;color:white}
@@ -109,39 +125,24 @@
   .poster-card .meta{position:absolute;left:12px;top:12px;background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;font-size:13px}
   .poster-card .buy-wrap{position:absolute;right:12px;bottom:12px}
 
-  /* pagination styling */
   .pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin:18px 0}
-  .page-btn{
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.08);
-    padding:8px 12px;
-    border-radius:8px;
-    color:var(--text);
-    cursor:pointer;
-    min-width:40px;
-    text-align:center;
-    font-weight:700;
-  }
+  .page-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:8px;color:var(--text);cursor:pointer;min-width:40px;text-align:center;font-weight:700}
   .page-btn:hover{background:rgba(255,255,255,0.03)}
   .page-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0; box-shadow: 0 8px 20px rgba(156,39,176,0.12)}
 
-  /* product/combo/custom-print/frames */
   .product, .combo-section, .features, .reviews, .policy, .shipping, .faq {background:var(--card);border-radius:12px;padding:20px;margin:30px 0}
   .combo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
   .combo-item{position:relative;border-radius:8px;overflow:hidden}
   .combo-item img{width:100%;height:100%;object-fit:cover;display:block}
 
-  /* custom-print responsive improvements (requested) */
   .custom-print{display:flex;gap:22px;align-items:flex-start;padding:20px;border-radius:14px;background:linear-gradient(90deg, rgba(14,78,71,0.06), rgba(21,31,42,0.02));flex-wrap:wrap}
   .custom-print .left{flex:1 1 360px;min-width:260px}
   .custom-print .right{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
   .custom-print .fancy-title{font-family:'Anton', sans-serif;font-size:26px;background: linear-gradient(90deg,#00C6A7,#006E6A);-webkit-background-clip:text;color:transparent;margin-bottom:8px}
   .custom-print .custom-desc{color:var(--muted);line-height:1.5; margin-bottom:10px}
-  /* larger tap targets on mobile */
   .custom-print .contact-cta{display:flex;gap:10px;flex-wrap:wrap}
   .custom-print .contact-cta .btn{padding:12px 18px;border-radius:12px;font-weight:800}
 
-  /* frame gallery */
   .frame-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
   .frame-wrap{position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));min-height:260px;display:flex;align-items:center;justify-content:center}
   .frame-wrap img{width:100%;height:100%;object-fit:cover;border-radius:8px}
@@ -151,11 +152,9 @@
   .frame.white{border:8px solid #fff;border-radius:10px;opacity:0.95}
   .frame-wrap .buy-wrap{position:absolute;right:12px;bottom:12px}
 
-  /* contact (no call) */
   .contact { display:flex; gap:12px; align-items:center; padding:18px; border-radius:12px; background:var(--card) }
   .contact a, .contact button { color:var(--accent2); text-decoration:none; font-weight:700; background:transparent; border:0; cursor:pointer }
 
-  /* cart section */
   .cart-section { background:var(--card); border-radius:12px; padding:20px; margin:30px 0; }
   .cart-list { display:grid; gap:12px; }
   .cart-item { display:flex; gap:12px; align-items:center; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
@@ -167,24 +166,22 @@
   .summary-row { display:flex; justify-content:space-between; padding:6px 0; color:var(--muted); }
   .summary-row.total { font-weight:800; color:var(--text); }
 
-  /* lightbox */
-  #lightbox { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; }
+  /* Lightbox styles — improved for mobile */
+  #lightbox { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
   #lightbox.active { display: flex; }
   #lightbox .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.95); }
-  #lightbox .content { position: relative; max-width: 900px; width: 92%; margin: 20px; z-index: 2; text-align: center; color: #fff; }
-  #lightbox img { width: 100%; max-height: 65vh; object-fit:contain; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+  #lightbox .content { position: relative; max-width: 920px; width: min(92%, 920px); max-height: calc(100vh - 40px); margin: 0 auto; z-index: 2; text-align: center; color: #fff; padding: 12px; overflow: auto; border-radius:10px }
+  /* Make image scale responsively and never overflow the viewport on mobile */
+  #lightbox img { width: auto; height: auto; max-width: 100%; max-height: calc(100vh - 160px); object-fit: contain; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
   #lightbox .desc { margin-top: 10px; color: #fff; font-size: 14px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; max-height: 22vh; overflow:auto; }
   #lightbox .close { position: absolute; right: -12px; top: -12px; background: rgba(255,255,255,0.06); color: #fff; border-radius: 50%; width:44px; height:44px; display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px; }
   #lightbox .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; left: 0; z-index: 3; display:flex;justify-content:space-between;pointer-events:none; }
   #lightbox .nav button { pointer-events:auto; background: rgba(255,255,255,0.04); border:0; color:#fff; width:48px; height:48px; border-radius:50%; cursor:pointer; }
 
-  /* buy button */
   .buy-btn{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700}
 
-  /* Payment select black background */
   #paymentMethod { background: #000 !important; color: #fff !important; }
 
-  /* responsive/mobile */
   @media(max-width:1100px){
     .hero-headline{font-size:44px}
     .frame-wrap{min-height:220px}
@@ -196,6 +193,7 @@
     .frame-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
     .hamburger{display:flex}
     nav.primary{display:none}
+    /* show mobile nav but default hidden until hamburger toggles display */
     .mobile-nav{display:none}
     .custom-print{flex-direction:column;align-items:flex-start}
     .custom-print .right{width:100%;flex:1}
@@ -203,6 +201,10 @@
     .custom-print .contact-cta{width:100%;justify-content:flex-start}
     .cart-item { flex-direction:column; align-items:flex-start; }
     .cart-item img { width:100%; height:auto; }
+
+    /* ensure lightbox content fits on narrow screens */
+    #lightbox .content { width: 94%; max-height: calc(100vh - 32px); padding: 10px; }
+    #lightbox img { max-height: calc(100vh - 140px); }
   }
   @media(max-width:560px){
     .hero-headline{font-size:28px}
@@ -213,247 +215,272 @@
     .hero-card{min-height:140px}
     .contact{flex-direction:column;align-items:flex-start}
     .custom-print .right{display:block}
+
+    #lightbox img { max-height: calc(100vh - 120px); }
   }
   @media(prefers-reduced-motion: reduce){
     * { animation: none !important; transition: none !important; }
   }
 
-  /* small toast */
+  /* Enhanced toast (notification) */
   .toast {
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 22px;
     bottom: 28px;
-    background: rgba(0,0,0,0.8);
+    background: linear-gradient(180deg, rgba(20,20,20,0.98), rgba(15,15,15,0.9));
     color: #fff;
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
     z-index: 99999;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
     font-weight:700;
-    display:none;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    min-width:220px;
+    max-width:360px;
+    transform: translateY(20px) scale(0.98);
+    opacity: 0;
+    pointer-events: none;
   }
-
+  .toast.show { opacity:1; transform: translateY(0) scale(1); pointer-events:auto; transition: transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms; }
+  .toast .thumb { width:48px; height:48px; border-radius:8px; overflow:hidden; flex-shrink:0; background:linear-gradient(90deg,var(--accent1),var(--accent3)); display:flex;align-items:center;justify-content:center }
+  .toast .thumb img{width:100%;height:100%;object-fit:cover}
+  .toast .body { display:flex;flex-direction:column; gap:4px; }
+  .toast .body .title { font-weight:800; font-size:14px; color:var(--text); }
+  .toast .body .meta { color:var(--muted); font-size:13px; font-weight:700 }
+  .toast .close-toast { margin-left:auto; background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:18px }
 </style>
 </head>
 <body>
 
-<div class="top-offer">🎉 Limited Offer — 6 Premium A4 Posters for ₹259 (was ₹299)! Free Delivery & COD (T&C apply) 🎉</div>
+  <div class="top-offer">🎉 Limited Offer — 6 Premium A4 Posters for ₹259 (was ₹299)! Free Delivery & COD (T&C apply) 🎉</div>
 
-<header class="header-wrap">
-  <div class="header-inner">
-    <div class="logo">Okurimono.in</div>
-    <nav class="primary" id="navPrimary">
-      <a href="#gallery" data-target="gallery">Gallery</a>
-      <a href="#product" data-target="product">Product</a>
-      <a href="#frameGallerySection" data-target="frameGallerySection">Frames</a>
-      <a href="#contact" data-target="contact">Contact</a>
-    </nav>
+  <header class="header-wrap">
+    <div class="header-inner">
+      <div class="logo">Okurimono.in</div>
 
-    <div style="display:flex;align-items:center;gap:10px">
-      <button class="cart-btn" id="openCartBtn">Cart (0)</button>
-      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><div></div></button>
+      <!-- primary nav (desktop) -->
+      <nav class="primary" id="navPrimary">
+        <a href="#gallery" data-target="gallery">Gallery</a>
+        <a href="#product" data-target="product">Product</a>
+        <a href="#frameGallerySection" data-target="frameGallerySection">Frames</a>
+        <a href="#contact" data-target="contact">Contact</a>
+      </nav>
+
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="cart-btn" id="openCartBtn">Cart (0)</button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><div></div></button>
+      </div>
+
+      <!-- mobile menu (rendered by JS) -->
+      <div id="mobileNav" class="mobile-nav" aria-hidden="true"></div>
     </div>
+  </header>
 
-    <div id="mobileNav" class="mobile-nav" aria-hidden="true"></div>
-  </div>
-</header>
+  <!-- HERO - full width -->
+  <section class="section hero" id="hero">
+    <div class="hero-inner">
+      <div class="container">
+        <h1 class="hero-headline">
+          <span>COLLECT</span>
+          <span class="highlight">POSTERS & FRAMES</span>
+          <div style="display:block">FOR YOU</div>
+        </h1>
 
-<section class="section hero" id="hero">
-  <div class="hero-inner">
+        <p class="hero-sub">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
+
+        <div class="cta-row">
+          <a class="btn btn-outline" href="#gallery">Explore</a>
+          <button class="btn btn-primary" id="customizeBtn">Customize</button>
+        </div>
+
+        <div class="promo-row" style="margin-top:10px">
+          <span style="color:var(--muted)">Trending:</span>
+          <span id="promoLoop">Limited Drops</span>
+        </div>
+
+        <div class="hero-cards" id="heroCards"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section scrolling-strip">
     <div class="container">
-      <h1 class="hero-headline">
-        <span>COLLECT</span>
-        <span class="highlight">POSTERS & FRAMES</span>
-        <div style="display:block">FOR YOU</div>
-      </h1>
-
-      <p class="hero-sub">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
-
-      <div class="cta-row">
-        <a class="btn btn-outline" href="#gallery">Explore</a>
-        <button class="btn btn-primary" id="customizeBtn">Customize</button>
-      </div>
-
-      <div class="promo-row" style="margin-top:10px">
-        <span style="color:var(--muted)">Trending:</span>
-        <span id="promoLoop">Limited Drops</span>
-      </div>
-
-      <div class="hero-cards" id="heroCards"></div>
+      <div class="scroller" id="autoScroller"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section scrolling-strip">
-  <div class="container">
-    <div class="scroller" id="autoScroller"></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="controls" id="controls">
-      <button class="filter-btn active" data-cat="">All</button>
-      <button class="filter-btn" data-cat="anime">Anime</button>
-      <button class="filter-btn" data-cat="cars">Cars</button>
-      <button class="filter-btn" data-cat="music">Music</button>
-      <button class="filter-btn" data-cat="quotes">Quotes</button>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="gallery">
-  <div class="container">
-    <div id="galleryGrid" class="gallery-grid" role="list"></div>
-    <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
-  </div>
-</section>
-
-<section class="section" id="product">
-  <div class="container">
-    <div id="productInner" class="product"></div>
-  </div>
-</section>
-
-<section class="section" id="combos">
-  <div class="container">
-    <h3 id="combo-heading">Combo Offers</h3>
-    <p style="color:var(--muted)">Mix & match portrait and landscape posters in your 6-poster combo.</p>
-    <div id="comboGrid" class="combo-grid" role="list"></div>
-  </div>
-</section>
-
-<section class="section custom-print" id="customPrint">
-  <div class="container" style="display:flex;align-items:flex-start;gap:20px">
-    <div class="left">
-      <div class="fancy-title" id="customTitle" style="font-family:'Anton',sans-serif;font-size:28px;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent">Custom Printed Frames for Special Occasions</div>
-      <p class="custom-desc">Celebrate birthdays, anniversaries and memories with a framed poster. We print on Kodak 180 GSM, finish and frame to gift-ready standards — secure packaging and preview before dispatch.</p>
-      <div class="contact-cta" style="margin-top:8px">
-        <button class="btn btn-primary" id="customWhatsAppBtn">Message for Custom Order</button>
-        <a class="btn btn-outline" href="#contact">Contact</a>
+  <section class="section">
+    <div class="container">
+      <div class="controls" id="controls">
+        <button class="filter-btn active" data-cat="">All</button>
+        <button class="filter-btn" data-cat="anime">Anime</button>
+        <button class="filter-btn" data-cat="cars">Cars</button>
+        <button class="filter-btn" data-cat="music">Music</button>
+        <button class="filter-btn" data-cat="quotes">Quotes</button>
       </div>
     </div>
-    <div class="right">
-      <div class="custom-frame" id="customFrameDemo" style="position:relative">
-        <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
-        <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn add-to-cart" data-id="frame-demo" data-title="Birthday Frame" data-src="https://picsum.photos/seed/frame/400/600">Add to cart</button></div>
-      </div>
+  </section>
+
+  <section class="section" id="gallery">
+    <div class="container">
+      <div id="galleryGrid" class="gallery-grid" role="list"></div>
+      <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section" id="frameGallerySection">
-  <div class="container">
-    <h3 style="margin-bottom:12px">Frame Gallery (Preview frames over posters)</h3>
-    <div id="frameGrid" class="frame-gallery"></div>
-  </div>
-</section>
-
-<section class="section reviews" id="reviews">
-  <div class="container">
-    <h3>Customer Reviews & Instagram</h3>
-    <div style="display:grid;gap:10px;margin-top:10px">
-      <div style="background:var(--card);padding:12px;border-radius:10px">“Great colors and quick delivery — Sayan”</div>
-      <div style="background:var(--card);padding:12px;border-radius:10px">“Perfect gift for birthday — Ananya”</div>
+  <section class="section" id="product">
+    <div class="container">
+      <div id="productInner" class="product"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section policy">
-  <div class="container">
-    <h3>Payment, COD & Return Policy</h3>
-    <p style="color:var(--muted)"><strong>Prepaid:</strong> Instant confirmation via UPI/PhonePe/Paytm. Custom orders may request a small ₹50 advance.</p>
-    <p style="color:var(--muted)"><strong>COD:</strong> COD available with handling fee (e.g., ₹90). Full COD-only bundles may be priced higher (e.g., ₹350).</p>
-    <p style="color:var(--muted)"><strong>Returns:</strong> Record an unboxing video at delivery. Report damage within 48 hours with video & photos; we will replace damaged items at no extra cost.</p>
-  </div>
-</section>
+  <section class="section" id="combos">
+    <div class="container">
+      <h3 id="combo-heading">Combo Offers</h3>
+      <p style="color:var(--muted)">Mix & match portrait and landscape posters in your 6-poster combo.</p>
+      <div id="comboGrid" class="combo-grid" role="list"></div>
+    </div>
+  </section>
 
-<section class="section shipping">
-  <div class="container">
-    <h3>Shipping</h3>
-    <p style="color:var(--muted)">Free delivery PAN India via DTDC or equivalent. Delivery estimate: 5–6 working days after dispatch.</p>
-  </div>
-</section>
-
-<section class="section" id="cartSection" aria-hidden="true" style="display:none;">
-  <div class="container">
-    <div class="cart-section">
-      <h3>Your Cart (<span id="cartCount">0</span>)</h3>
-      <div id="cartList" class="cart-list"></div>
-
-      <div class="cart-summary" id="cartSummary">
-        <div class="summary-row"><div>Items total</div><div id="itemsTotal">₹0</div></div>
-        <div class="summary-row"><div>COD fee (if COD)</div><div id="codFee">₹0</div></div>
-        <div class="summary-row"><div>Advance now (if applicable)</div><div id="advanceNow">₹0</div></div>
-        <div class="summary-row total"><div>Grand Total</div><div id="grandTotal">₹0</div></div>
-
-        <div style="margin-top:12px">
-          <label style="display:block;margin-bottom:8px;color:var(--muted)">Payment Method</label>
-          <select id="paymentMethod" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
-            <option value="upi">UPI (full)</option>
-            <option value="cod">Cash on Delivery (+₹75)</option>
-            <option value="advance">Advance (Special: if total posters ≥ 6 pay ₹50 now)</option>
-          </select>
+  <section class="section custom-print" id="customPrint">
+    <div class="container" style="display:flex;align-items:flex-start;gap:20px">
+      <div class="left">
+        <div class="fancy-title" id="customTitle" style="font-family:'Anton',sans-serif;font-size:28px;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent">Custom Printed Frames for Special Occasions</div>
+        <p class="custom-desc">Celebrate birthdays, anniversaries and memories with a framed poster. We print on Kodak 180 GSM, finish and frame to gift-ready standards — secure packaging and preview before dispatch.</p>
+        <div class="contact-cta" style="margin-top:8px">
+          <button class="btn btn-primary" id="customWhatsAppBtn">Message for Custom Order</button>
+          <a class="btn btn-outline" href="#contact">Contact</a>
         </div>
-
-        <div style="margin-top:12px">
-          <button id="checkoutBtn" class="btn btn-primary">Checkout via WhatsApp</button>
-          <button id="closeCartBtn" class="btn btn-outline" style="margin-left:8px">Close</button>
-        </div>
-
-        <div style="margin-top:12px;color:var(--muted);font-size:14px">
-          <strong>Damage / Transit:</strong> If any product is damaged or torn on transit, record the unboxing video and share with us within 48 hours. We'll replace damaged items free of cost with no extra charges.
+      </div>
+      <div class="right">
+        <div class="custom-frame" id="customFrameDemo" style="position:relative">
+          <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
+          <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn add-to-cart" data-id="frame-demo" data-title="Birthday Frame" data-src="https://picsum.photos/seed/frame/400/600">Add to cart</button></div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="section" id="contact">
-  <div class="container">
-    <div class="contact">
-      <div class="col">
-        <h3>Contact Us</h3>
-        <p style="color:var(--muted)">Please do not call — <strong>leave us a WhatsApp message</strong> and we'll reply quickly.</p>
-        <p><strong>WhatsApp:</strong>
-          <button class="buy-btn" id="contactWhatsAppBtn">Message on WhatsApp</button>
-        </p>
-        <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
-      </div>
-      <div class="col" style="min-width:220px">
-        <p style="color:var(--muted)"><strong>Business Hours</strong></p>
-        <p>Open all day — 24/7</p>
-        <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
+  <section class="section" id="frameGallerySection">
+    <div class="container">
+      <h3 style="margin-bottom:12px">Frame Gallery (Preview frames over posters)</h3>
+      <div id="frameGrid" class="frame-gallery"></div>
+    </div>
+  </section>
+
+  <section class="section reviews" id="reviews">
+    <div class="container">
+      <h3>Customer Reviews & Instagram</h3>
+      <div style="display:grid;gap:10px;margin-top:10px">
+        <div style="background:var(--card);padding:12px;border-radius:10px">“Great colors and quick delivery — Sayan”</div>
+        <div style="background:var(--card);padding:12px;border-radius:10px">“Perfect gift for birthday — Ananya”</div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<footer class="section" style="padding-top:8px;padding-bottom:20px">
-  <div class="container" style="text-align:center;color:var(--muted)">© Okurimono.in • DM @okurimono.in</div>
-</footer>
-
-<!-- LIGHTBOX -->
-<div id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
-  <div class="backdrop" id="lbBackdrop"></div>
-  <div class="content" role="document" id="lbContent">
-    <button class="close" id="lbClose" aria-label="Close">×</button>
-    <div class="nav">
-      <button id="lbPrev" aria-label="Previous">‹</button>
-      <button id="lbNext" aria-label="Next">›</button>
+  <section class="section policy">
+    <div class="container">
+      <h3>Payment, COD & Return Policy</h3>
+      <p style="color:var(--muted)"><strong>Prepaid:</strong> Instant confirmation via UPI/PhonePe/Paytm. Custom orders may request a small ₹50 advance.</p>
+      <p style="color:var(--muted)"><strong>COD:</strong> COD available with handling fee (e.g., ₹90). Full COD-only bundles may be priced higher (e.g., ₹350).</p>
+      <p style="color:var(--muted)"><strong>Returns:</strong> Record an unboxing video at delivery. Report damage within 48 hours with video & photos; we will replace damaged items at no extra cost.</p>
     </div>
-    <img src="" alt="" id="lbImage">
-    <div class="desc" id="lbDesc"></div>
+  </section>
+
+  <section class="section shipping">
+    <div class="container">
+      <h3>Shipping</h3>
+      <p style="color:var(--muted)">Free delivery PAN India via DTDC or equivalent. Delivery estimate: 5–6 working days after dispatch.</p>
+    </div>
+  </section>
+
+  <section class="section" id="cartSection" aria-hidden="true" style="display:none;">
+    <div class="container">
+      <div class="cart-section">
+        <h3>Your Cart (<span id="cartCount">0</span>)</h3>
+        <div id="cartList" class="cart-list"></div>
+
+        <div class="cart-summary" id="cartSummary">
+          <div class="summary-row"><div>Items total</div><div id="itemsTotal">₹0</div></div>
+          <div class="summary-row"><div>COD fee (if COD)</div><div id="codFee">₹0</div></div>
+          <div class="summary-row"><div>Advance now (if applicable)</div><div id="advanceNow">₹0</div></div>
+          <div class="summary-row total"><div>Grand Total</div><div id="grandTotal">₹0</div></div>
+
+          <div style="margin-top:12px">
+            <label style="display:block;margin-bottom:8px;color:var(--muted)">Payment Method</label>
+            <select id="paymentMethod" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
+              <option value="upi">UPI (full)</option>
+              <option value="cod">Cash on Delivery (+₹75)</option>
+              <option value="advance">Advance (Special: if total posters ≥ 6 pay ₹50 now)</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <button id="checkoutBtn" class="btn btn-primary">Checkout via WhatsApp</button>
+            <button id="closeCartBtn" class="btn btn-outline" style="margin-left:8px">Close</button>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:14px">
+            <strong>Damage / Transit:</strong> If any product is damaged or torn on transit, record the unboxing video and share with us within 48 hours. We'll replace damaged items free of cost with no extra charges.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="contact">
+        <div class="col">
+          <h3>Contact Us</h3>
+          <p style="color:var(--muted)">Please do not call — <strong>leave us a WhatsApp message</strong> and we'll reply quickly.</p>
+          <p><strong>WhatsApp:</strong>
+            <button class="buy-btn" id="contactWhatsAppBtn">Message on WhatsApp</button>
+          </p>
+          <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
+        </div>
+        <div class="col" style="min-width:220px">
+          <p style="color:var(--muted)"><strong>Business Hours</strong></p>
+          <p>Open all day — 24/7</p>
+          <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="section" style="padding-top:8px;padding-bottom:20px">
+    <div class="container" style="text-align:center;color:var(--muted)">© Okurimono.in • DM @okurimono.in</div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
+    <div class="backdrop" id="lbBackdrop"></div>
+    <div class="content" role="document" id="lbContent">
+      <button class="close" id="lbClose" aria-label="Close">×</button>
+      <div class="nav">
+        <button id="lbPrev" aria-label="Previous">‹</button>
+        <button id="lbNext" aria-label="Next">›</button>
+      </div>
+      <img src="" alt="" id="lbImage">
+      <div class="desc" id="lbDesc"></div>
+    </div>
   </div>
-</div>
 
-<!-- toast -->
-<div id="toast" class="toast">Already in cart</div>
+  <!-- toast -->
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true">
+    <div class="thumb"><img src="https://picsum.photos/seed/thumb/80/80" alt="thumb"></div>
+    <div class="body">
+      <div class="title">Item added</div>
+      <div class="meta">1 × Poster</div>
+    </div>
+    <button class="close-toast" aria-label="Close notification">✕</button>
+  </div>
 
-<!-- GSAP -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
 /* === Data arrays (framesData include cat) === */
@@ -520,8 +547,12 @@ const paymentMethodEl = document.getElementById('paymentMethod');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const closeCartBtn = document.getElementById('closeCartBtn');
 const toastEl = document.getElementById('toast');
+const toastThumb = toastEl.querySelector('.thumb img');
+const toastTitleEl = toastEl.querySelector('.title');
+const toastMetaEl = toastEl.querySelector('.meta');
+const toastCloseBtn = toastEl.querySelector('.close-toast');
 
-function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function esc(s){ return String(s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* === Renderers === */
 function renderHeroImages(){
@@ -592,7 +623,6 @@ function renderCombos(){
   }).join('');
 }
 
-/* Render frames with optional category filter */
 function renderFrames(category=''){
   const filtered = category ? framesData.filter(f => f.cat === category) : framesData.slice();
   frameGrid.innerHTML = filtered.map(f => {
@@ -616,8 +646,7 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* === Cart logic (unchanged except alert on add) === */
-
+/* === Cart logic === */
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
 }
@@ -629,11 +658,10 @@ function addToCart(item){
     cart.push({ id, title: item.title, src: item.src, qty: 1 }); // default qty = 1
     saveCart();
     refreshCartUI();
-    // <-- Requested change: alert on successful add (works in mobile + desktop)
-    try { alert('Added to cart successfully!'); } catch(e){}
-    showToast('Added to cart');
+    // show enhanced toast with item info (no native alert)
+    showToast({ title: item.title, qty: 1, src: item.src });
   } else {
-    showToast('Already in cart');
+    showToast({ title: item.title, qty: cart[idx].qty, src: item.src, already:true });
   }
 }
 
@@ -770,7 +798,7 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout - changed to api.whatsapp.com/send (no URL added into message body) */
+/* Checkout */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
@@ -783,7 +811,6 @@ function checkout(){
 
   const firstItem = cart[0];
   let msgParts = [];
-  // include first image URL at top (so whatsapp message contains image url text only if you want)
   if(firstItem && firstItem.src){
     msgParts.push(`${firstItem.src}`);
   }
@@ -801,20 +828,35 @@ function checkout(){
   msgParts.push(`Grand total: ₹${totals.grandTotal}`);
   msgParts.push(`Please pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
 
-  const finalMessage = encodeURIComponent(msgParts.join('\n'));
-  // <-- Requested change: use api.whatsapp.com/send so WhatsApp opens cleanly; message text contains only order details
+  const finalMessage = encodeURIComponent(msgParts.join('
+'));
   const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${finalMessage}`;
   window.open(url, '_blank');
 }
 
-/* toast */
+/* Enhanced toast behavior */
 let toastTimeout;
-function showToast(text){
+function showToast(payload){
+  // accepts string or object { title, qty, src, already }
+  const p = typeof payload === 'string' ? { title: payload, qty: 1 } : (payload || {});
+  const title = p.title || 'Item added';
+  const qty = p.qty || 1;
+  const src = p.src || 'https://picsum.photos/seed/thumb/80/80';
+  const already = !!p.already;
+
+  // update UI
+  toastThumb.src = src;
+  toastTitleEl.textContent = already ? `${title} (in cart)` : `${title}`;
+  toastMetaEl.textContent = `${qty} × added`;
+
+  // show with animation class
+  toastEl.classList.add('show');
   clearTimeout(toastTimeout);
-  toastEl.textContent = text;
-  toastEl.style.display = 'block';
-  toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
+  toastTimeout = setTimeout(()=>{ toastEl.classList.remove('show'); }, 1800);
 }
+
+// allow manual close
+toastCloseBtn.addEventListener('click', ()=>{ toastEl.classList.remove('show'); clearTimeout(toastTimeout); });
 
 /* === Lightbox + interactions === */
 let clickableItems = [];
@@ -838,7 +880,6 @@ function bindInteractiveElements(){
     it.el.onclick = (e)=> { e.stopPropagation(); const findIndex = clickableItems.findIndex(x=>x.el===it.el); if(findIndex!==-1) openLightbox(findIndex); };
   });
 
-  // add-to-cart buttons
   document.querySelectorAll('.add-to-cart').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -849,7 +890,6 @@ function bindInteractiveElements(){
     });
   });
 
-  // non-cart buy buttons -> open WhatsApp via api.whatsapp.com/send (no url text in message body)
   document.querySelectorAll('.buy-btn:not(.add-to-cart)').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
@@ -880,10 +920,16 @@ function openLightbox(index){
   lbDesc.innerHTML = `<strong style="display:block;margin-bottom:6px">${esc(it.title)}</strong>`;
   lightbox.setAttribute('aria-hidden','false');
   lightbox.classList.add('active');
+  // prevent background scroll on mobile so the image fits neatly
+  document.body.style.overflow = 'hidden';
   gsap.fromTo('#lightbox .backdrop', {opacity:0}, {opacity:1, duration:0.28});
   gsap.fromTo('#lbContent', {y:30, opacity:0}, {y:0, opacity:1, duration:0.36, delay:0});
 }
-function closeLightbox(){ lightbox.setAttribute('aria-hidden','true'); gsap.to('#lbContent', {y:20, opacity:0, duration:0.22}); gsap.to('#lightbox .backdrop', {opacity:0, duration:0.22, onComplete: ()=> { lightbox.classList.remove('active'); lbImage.src = ''; currentIndex = -1; }}); }
+function closeLightbox(){
+  lightbox.setAttribute('aria-hidden','true');
+  gsap.to('#lbContent', {y:20, opacity:0, duration:0.22});
+  gsap.to('#lightbox .backdrop', {opacity:0, duration:0.22, onComplete: ()=> { lightbox.classList.remove('active'); lbImage.src = ''; currentIndex = -1; document.body.style.overflow = ''; }});
+}
 lbClose.addEventListener('click', closeLightbox);
 lbBackdrop.addEventListener('click', closeLightbox);
 document.addEventListener('keydown', (e)=>{ if(lightbox.classList.contains('active')){ if(e.key === 'Escape') closeLightbox(); if(e.key === 'ArrowLeft') prevItem(); if(e.key === 'ArrowRight') nextItem(); } });
@@ -913,7 +959,9 @@ function initAutoScroller(){
   }
 }
 
-/* Mobile nav */
+/* Mobile nav behavior: menu is fixed (CSS) and will remain while scrolling.
+   Clicking a link scrolls to section and hides the mobile menu.
+*/
 const mobileNav = document.getElementById('mobileNav');
 function setupMobileNav(){
   const links = [
@@ -923,6 +971,10 @@ function setupMobileNav(){
     {label:'Contact', href:'#contact'}
   ];
   mobileNav.innerHTML = links.map(l=>`<a href="${l.href}" style="display:block;padding:8px 10px;color:var(--text);text-decoration:none">${l.label}</a>`).join('');
+
+  // keep it fixed and responsive; already position:fixed in CSS
+  mobileNav.setAttribute('aria-hidden','true');
+  // wire up clicks
   mobileNav.querySelectorAll('a').forEach(a=>{
     a.addEventListener('click', (e)=>{
       e.preventDefault();
@@ -933,17 +985,31 @@ function setupMobileNav(){
       mobileNav.setAttribute('aria-hidden','true');
     });
   });
-  document.getElementById('hamburgerBtn').addEventListener('click', ()=>{
+
+  const hamburger = document.getElementById('hamburgerBtn');
+  hamburger.addEventListener('click', ()=>{
     if(mobileNav.style.display === 'block'){ mobileNav.style.display='none'; mobileNav.setAttribute('aria-hidden','true'); }
     else { mobileNav.style.display='block'; mobileNav.setAttribute('aria-hidden','false'); }
   });
+
+  // ensure mobile nav hides on window resize to desktop and on scroll for a tidy UX
+  window.addEventListener('resize', ()=> {
+    if(window.innerWidth > 880){
+      mobileNav.style.display = 'none';
+      mobileNav.setAttribute('aria-hidden','true');
+    }
+  });
+
+  window.addEventListener('scroll', ()=> {
+    // keep mobile nav visible if user opened it; but if user scrolls and menu is open, keep it fixed (CSS handles fixed).
+    // we do not auto-close to avoid interfering with user — only hide if scrolled far above header
+  });
 }
 
-/* GSAP animations (kept) */
+/* GSAP animations */
 function initGSAP(){
   gsap.registerPlugin(ScrollTrigger);
   gsap.defaults({ease:'power1.out'});
-
   gsap.from('.hero-headline', {opacity:0,y:30,duration:0.8});
   gsap.from('.hero-sub', {opacity:0,y:20,duration:0.6,delay:0.12});
   gsap.to('.hero-card img', {scale:1.02, yoyo:true, repeat:-1, duration:5, stagger:0.6});
@@ -983,7 +1049,7 @@ function updateActiveNavOnScroll(){
 window.addEventListener('scroll', updateActiveNavOnScroll);
 window.addEventListener('resize', updateActiveNavOnScroll);
 
-/* Setup filter buttons to filter both gallery and frames */
+/* Setup filter buttons */
 function setupFilters(){
   document.querySelectorAll('.filter-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -991,7 +1057,6 @@ function setupFilters(){
       btn.classList.add('active');
       const cat = btn.dataset.cat || '';
       activeCategory = cat;
-      // re-render both poster gallery and frames (frames filtered by cat)
       renderGallery(1);
       renderFrames(cat);
     });
@@ -1006,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   renderScrollingStrip();
   renderMainProduct();
   renderCombos();
-  renderFrames(); // show all frames initially
+  renderFrames();
   renderGallery(1);
 
   bindInteractiveElements();
@@ -1015,21 +1080,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initGSAP();
   updateActiveNavOnScroll();
 
-  setupFilters(); // <-- wire up filter buttons to filter frames too
+  setupFilters();
 
   refreshCartUI();
 
-  // open cart / close cart
   openCartBtn.addEventListener('click', ()=> openCart());
   closeCartBtn.addEventListener('click', ()=> closeCart());
-
-  // payment change
   paymentMethodEl.addEventListener('change', ()=> refreshCartUI());
-
-  // checkout
   checkoutBtn.addEventListener('click', ()=> checkout());
 
-  // contact whatsapp (uses api.whatsapp.com/send)
   const contactWhatsAppBtn = document.getElementById('contactWhatsAppBtn');
   contactWhatsAppBtn.addEventListener('click', ()=> {
     const base = `Hi I am interested in your poster collection!`;
@@ -1037,7 +1096,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     window.open(url, '_blank');
   });
 
-  // custom order
   const customWhatsAppBtn = document.getElementById('customWhatsAppBtn');
   if(customWhatsAppBtn) customWhatsAppBtn.addEventListener('click', ()=> {
     const base = `Hi I want a custom printed frame. Please assist.`;
