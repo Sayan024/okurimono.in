@@ -23,7 +23,7 @@
 
   /* SECTION helper: each major block is full width; inner container centers */
   .section { width:100%; padding:30px 0; }
-  .container { max-width:var(--max-content-width); margin:0 auto; padding:0 20px; }
+  .container { max-width:var(--max-content-width); margin:0 auto; padding:0 20px; box-sizing:border-box; }
 
   /* header / nav - FIXED */
   .header-wrap{
@@ -154,13 +154,14 @@
   .contact { display:flex; gap:12px; align-items:center; padding:18px; border-radius:12px; background:var(--card) }
   .contact a, .contact button { color:var(--accent2); text-decoration:none; font-weight:700; background:transparent; border:0; cursor:pointer }
 
-  .cart-section { background:var(--card); border-radius:12px; padding:20px; margin:30px 0; }
+  .cart-section { background:var(--card); border-radius:12px; padding:20px; margin:30px 0; overflow:auto; }
   .cart-list { display:grid; gap:12px; }
-  .cart-item { display:flex; gap:12px; align-items:center; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
+  .cart-item { display:flex; gap:12px; align-items:center; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; flex-wrap:wrap; } /* allow wrap for small screens */
   .cart-item img { width:92px; height:92px; object-fit:cover; border-radius:8px; flex-shrink:0; }
   .cart-item .title { font-weight:700; }
   .qty-controls { display:flex; gap:8px; align-items:center; }
   .qty-controls button { padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:var(--text); cursor:pointer; }
+  .qty-controls input[type="number"]{ width:64px; text-align:center; padding:6px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:var(--text); }
   .cart-summary { margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.04); }
   .summary-row { display:flex; justify-content:space-between; padding:6px 0; color:var(--muted); }
   .summary-row.total { font-weight:800; color:var(--text); }
@@ -239,8 +240,9 @@
     .custom-print .right{width:100%;flex:1}
     .custom-print .left{width:100%}
     .custom-print .contact-cta{width:100%;justify-content:flex-start}
-    .cart-item { flex-direction:column; align-items:flex-start; }
-    .cart-item img { width:100%; height:auto; }
+    .cart-item { flex-direction:row; align-items:center; } /* keep row until smaller break */
+    .cart-item img { width:92px; height:92px; }
+    .qty-controls input[type="number"]{ width:56px; }
   }
 
   /* ---------- Additional mobile friendliness tweaks ---------- */
@@ -256,9 +258,16 @@
     .poster-card img{height:220px; object-fit:cover}
     .frame-gallery{grid-template-columns:repeat(1,1fr)}
     .frame-wrap{min-height:180px}
-    .cart-item { flex-direction:column; align-items:flex-start;gap:10px; }
-    .cart-item img { width:100%; height:180px; object-fit:cover; }
-    .toast { bottom: 16px; padding:10px 12px; font-size:14px; }
+
+    /* CART mobile adjustments that fix the responsiveness after adding items */
+    .cart-item { flex-direction:column; align-items:flex-start; gap:10px; }
+    .cart-item img { width:100%; height:160px; object-fit:cover; }
+    .cart-item > div[style] { width:100%; } /* make main content span full width */
+    .qty-controls { margin-top:6px; }
+    .qty-controls input[type="number"]{ width:72px; }
+    .cart-summary { font-size:14px; }
+    .cart-section { padding:14px; }
+    .toast { bottom: 16px; padding:10px 12px; font-size:14px; max-width:92%; }
     #lightbox img { max-height: 90vh; } /* give more room on very small screens */
     .mobile-nav { top:56px; max-height: calc(100vh - 56px); }
   }
@@ -289,6 +298,7 @@
   .toast.show { display:block; opacity:1; transform: translateX(-50%) translateY(0); }
   .toast.hide { opacity:0; transform: translateX(-50%) translateY(18px); }
   .toast strong{ color:var(--accent2); font-weight:800; margin-left:6px; display:inline-block; }
+
 </style>
 </head>
 <body>
@@ -715,9 +725,7 @@ function unitPriceBasedOnTotalItems(totalItems){
   return 43;
 }
 
-/* === IMPORTANT CHANGE: computeCartTotals now subtracts advanceNow from grandTotal when applicable ===
-   grandTotal = itemsTotal + codFee - advanceNow
-*/
+/* computeCartTotals unchanged (advance deducted as earlier) */
 function computeCartTotals(paymentMethod){
   let itemsTotal = 0;
   let totalQty = 0;
@@ -736,9 +744,7 @@ function computeCartTotals(paymentMethod){
   let advanceNow = 0;
   if(paymentMethod === 'advance' && totalQty >= 6) advanceNow = 50;
 
-  // Subtract advanceNow from the grand total (advance paid reduces payable now)
   let grandTotal = Math.max(0, itemsTotal + codFee - advanceNow);
-
   return { itemsTotal, codFee, advanceNow, grandTotal, totalQty, unitPrice: unit };
 }
 
@@ -763,7 +769,7 @@ function refreshCartUI(){
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
           <div class="qty-controls">
             <button class="qty-decr" data-id="${esc(it.id)}">-</button>
-            <input type="number" min="1" value="${it.qty}" data-count-input style="width:52px;padding:6px;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--text)">
+            <input type="number" min="1" value="${it.qty}" data-count-input>
             <button class="qty-incr" data-id="${esc(it.id)}">+</button>
           </div>
           <div style="margin-top:6px;color:var(--muted);font-size:14px">Item total: ₹<span class="item-total">0</span></div>
@@ -878,7 +884,7 @@ function showToast(html){
     toastEl.classList.remove('show');
     toastEl.classList.add('hide');
     setTimeout(()=> { toastEl.style.display = 'none'; }, 320);
-  }, 1600);
+  }, 1400);
 }
 
 function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
