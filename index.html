@@ -170,6 +170,9 @@
   /* buy button */
   .buy-btn{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700}
 
+  /* Payment select black background (requested) */
+  #paymentMethod { background: #000 !important; color: #fff !important; }
+
   /* responsive/mobile */
   @media(max-width:1100px){
     .hero-headline{font-size:44px}
@@ -203,6 +206,22 @@
   }
   @media(prefers-reduced-motion: reduce){
     * { animation: none !important; transition: none !important; }
+  }
+
+  /* small toast for "already in cart" */
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 28px;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    z-index: 99999;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    font-weight:700;
+    display:none;
   }
 
 </style>
@@ -320,7 +339,7 @@
       <div class="right">
         <div class="custom-frame" id="customFrameDemo" style="position:relative">
           <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
-          <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn" data-id="frame-demo" data-title="Birthday Frame">Buy</button></div>
+          <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn add-to-cart" data-id="frame-demo" data-title="Birthday Frame" data-src="https://picsum.photos/seed/frame/400/600">Add to cart</button></div>
         </div>
       </div>
     </div>
@@ -378,7 +397,7 @@
 
           <div style="margin-top:12px">
             <label style="display:block;margin-bottom:8px;color:var(--muted)">Payment Method</label>
-            <select id="paymentMethod" style="padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
+            <select id="paymentMethod" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
               <option value="upi">UPI (full)</option>
               <option value="cod">Cash on Delivery (+₹75)</option>
               <option value="advance">Advance (Special: if total posters ≥ 6 pay ₹50 now)</option>
@@ -411,9 +430,10 @@
           <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
         </div>
         <div class="col" style="min-width:220px">
-          <p style="color:var(--muted)">Business Hours</p>
-          <p>Mon — Sat: 10:00 — 18:00</p>
-          <p>Sun: Closed</p>
+          <!-- 1f: Business hours all day open -->
+          <p style="color:var(--muted)"><strong>Business Hours</strong></p>
+          <p>Open all day — 24/7</p>
+          <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
         </div>
       </div>
     </div>
@@ -437,13 +457,16 @@
     </div>
   </div>
 
+  <!-- small toast -->
+  <div id="toast" class="toast">Already in cart</div>
+
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
 /* =========================
-   Existing data arrays (unchanged except we keep them here)
+   Existing data arrays (kept)
    ========================= */
 const heroUploadedImages = [
   '/mnt/data/d0f60b4e-88a4-4e7d-a465-1b657139c526.png',
@@ -488,15 +511,12 @@ const framesData = [
 const WA_PHONE = '918617743811';
 
 /* =========================
-   Cart implementation (new)
-   - Cart stored in browser memory (page session)
-   - Each cart item: { id, title, src, qty }
+   Cart implementation
+   - Quantity per poster fixed to 1 only (per request)
+   - Pricing depends on total items in cart (see rules)
    ========================= */
 
-let cart = []; // array of items
-const CART_KEYS = { count:'#cartCount', openBtn:'#openCartBtn' };
-
-/* DOM refs */
+let cart = []; // array of items -> each item { id, title, src, qty } but qty stays 1
 const galleryGrid = document.getElementById('galleryGrid');
 const paginationEl = document.getElementById('pagination');
 const heroCardsEl = document.getElementById('heroCards');
@@ -516,11 +536,11 @@ const grandTotalEl = document.getElementById('grandTotal');
 const paymentMethodEl = document.getElementById('paymentMethod');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const closeCartBtn = document.getElementById('closeCartBtn');
+const toastEl = document.getElementById('toast');
 
-/* Helpers */
 function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* Load initial UI content (reuse existing renderers) */
+/* RENDERERS (unchanged structure; add-to-cart uses add-to-cart buttons that now fix qty=1) */
 function renderHeroImages(){
   heroCardsEl.innerHTML = heroUploadedImages.map((src,i)=>`
     <div class="hero-card" data-idx="${i}">
@@ -611,34 +631,27 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* =========================
-   Cart functions
-   ========================= */
+/* CART LOGIC (changes applied) */
 
+/* We treat each poster's quantity as fixed to 1.
+   If user tries to add same item again we show a small toast and ignore (no quantity increment).
+*/
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
 }
 
 function addToCart(item){
-  // item { id, title, src }
   const id = String(item.id);
   const idx = findCartItemIndex(id);
   if(idx === -1){
-    cart.push({ id, title: item.title, src: item.src, qty: 1 });
+    cart.push({ id, title: item.title, src: item.src, qty: 1 }); // qty stays 1
+    saveCart();
+    refreshCartUI();
+    showToast('Added to cart');
   } else {
-    cart[idx].qty += 1;
+    // quantity fixed to 1 — user cannot add duplicate quantities of the same poster
+    showToast('Item already in cart');
   }
-  saveCart();
-  refreshCartUI();
-}
-
-function updateQty(id, qty){
-  const idx = findCartItemIndex(id);
-  if(idx === -1) return;
-  cart[idx].qty = Math.max(0, Math.floor(qty));
-  if(cart[idx].qty === 0) cart.splice(idx,1);
-  saveCart();
-  refreshCartUI();
 }
 
 function removeFromCart(id){
@@ -649,79 +662,67 @@ function removeFromCart(id){
   refreshCartUI();
 }
 
-/* Pricing rule (per item):
-   - if item quantity < 4 => unit price = 60
-   - if item quantity > 6 => unit price = 43
-   - else (4..6) => unit price = 50
+/* Pricing rules depend on total items in cart (sum of qtys).
+   You provided overlapping rules for total items = 6. To resolve without asking,
+   we give precedence to the ">=6 and <=15 => ₹43" rule (so totalItems === 6 => ₹43).
+   Implementation order below enforces that precedence.
+   Rules implemented:
+     - totalItems <= 3  => unit price 60
+     - else if totalItems <= 6 => unit price 50
+     - else if totalItems >=6 && totalItems <=15 => unit price 43  (precedence applied first)
+   Note: Because of overlap in your instructions at '6', we check the >=6..<=15 branch first,
+   so 6 will be treated as ₹43.
 */
-function unitPriceForQty(qty){
-  if(qty < 4) return 60;
-  if(qty > 6) return 43;
-  return 50;
+function unitPriceBasedOnTotalItems(totalItems){
+  // check 1d precedence first (>=6 && <=15 => 43)
+  if(totalItems >= 6 && totalItems <= 15) return 43;
+  if(totalItems <= 3) return 60;
+  if(totalItems <= 6) return 50;
+  // fallback
+  return 43;
 }
 
 function computeCartTotals(paymentMethod){
-  // returns { itemsTotal, codFee, advanceNow, grandTotal, totalQty }
   let itemsTotal = 0;
   let totalQty = 0;
-  cart.forEach(item => {
-    const up = unitPriceForQty(item.qty);
-    itemsTotal += up * item.qty;
-    totalQty += item.qty;
-  });
+  cart.forEach(item => { totalQty += item.qty; });
+
+  const unit = unitPriceBasedOnTotalItems(totalQty || 0);
+  cart.forEach(item => { itemsTotal += unit * item.qty; });
 
   let codFee = 0;
-  if(paymentMethod === 'cod') codFee = 75; // as requested
+  if(paymentMethod === 'cod') codFee = 75;
 
   let advanceNow = 0;
-  // Advance behavior: "Advance delivery is free delivery for 6 Poster need to pay 50 rs minimal amount rest amount you have to pay after receiving delivery"
-  // Implementation: if paymentMethod === 'advance' and totalQty >= 6 => only ₹50 collected now; remaining on delivery
-  if(paymentMethod === 'advance' && totalQty >= 6){
-    advanceNow = 50;
-  } else {
-    // for other cases, no special advance
-    advanceNow = 0;
-  }
+  if(paymentMethod === 'advance' && totalQty >= 6) advanceNow = 50;
 
-  const grandTotal = Math.max(0, itemsTotal + codFee); // advanceNow is partial paid (does not reduce order total here)
-  return { itemsTotal, codFee, advanceNow, grandTotal, totalQty };
+  const grandTotal = Math.max(0, itemsTotal + codFee);
+  return { itemsTotal, codFee, advanceNow, grandTotal, totalQty, unitPrice: unit };
 }
 
-/* Save/load cart to sessionStorage so page refresh keeps cart (optional) */
-function saveCart(){
-  try { sessionStorage.setItem('ok_cart_v1', JSON.stringify(cart)); } catch(e){}
-}
-function loadCart(){
-  try {
-    const raw = sessionStorage.getItem('ok_cart_v1');
-    if(raw) cart = JSON.parse(raw) || [];
-  } catch(e){}
-}
+/* persist in sessionStorage */
+function saveCart(){ try { sessionStorage.setItem('ok_cart_v1', JSON.stringify(cart)); } catch(e){} }
+function loadCart(){ try { const raw = sessionStorage.getItem('ok_cart_v1'); if(raw) cart = JSON.parse(raw) || []; } catch(e){} }
 
-/* Refresh cart UI (cart panel content and header count) */
+/* refresh cart UI */
 function refreshCartUI(){
   const count = cart.reduce((s,it)=>s+it.qty, 0);
   cartCountEl.textContent = count;
   openCartBtn.textContent = `Cart (${count})`;
 
-  // render cart list
   if(cart.length === 0){
     cartList.innerHTML = `<div style="color:var(--muted)">Your cart is empty. Add posters from the gallery.</div>`;
   } else {
+    // each item qty is shown as fixed "1"
     cartList.innerHTML = cart.map(it => `
       <div class="cart-item" data-id="${esc(it.id)}">
         <img src="${esc(it.src)}" alt="${esc(it.title)}">
         <div style="flex:1">
           <div class="title">${esc(it.title)}</div>
-          <div style="color:var(--muted);font-size:13px;margin-top:6px">Unit price depends on quantity (rules shown below)</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px">Quantity is fixed to 1 per poster.</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-          <div class="qty-controls">
-            <button class="qty-decr" data-id="${esc(it.id)}">-</button>
-            <div style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);min-width:34px;text-align:center">${it.qty}</div>
-            <button class="qty-incr" data-id="${esc(it.id)}">+</button>
-          </div>
-          <div style="margin-top:6px;color:var(--muted);font-size:14px">Item total: ₹${ (unitPriceForQty(it.qty)*it.qty).toFixed(0) }</div>
+          <div style="margin-top:6px;color:var(--muted);font-size:14px">Item total: ₹<span class="item-total">0</span></div>
           <div><button class="btn btn-outline remove-item" data-id="${esc(it.id)}">Remove</button></div>
         </div>
       </div>
@@ -736,25 +737,16 @@ function refreshCartUI(){
   advanceNowEl.textContent = totals.advanceNow ? `₹${totals.advanceNow}` : '₹0';
   grandTotalEl.textContent = `₹${(totals.grandTotal).toFixed(0)}`;
 
-  // attach handlers for qty buttons and remove
-  document.querySelectorAll('.qty-incr').forEach(b=>{
-    b.addEventListener('click', (e)=>{
-      const id = b.dataset.id;
-      const idx = findCartItemIndex(id);
-      if(idx !== -1){ cart[idx].qty += 1; saveCart(); refreshCartUI(); }
-    });
+  // set item totals per rendered items
+  document.querySelectorAll('.cart-item').forEach((el, idx)=>{
+    const it = cart[idx];
+    const itemTotalEl = el.querySelector('.item-total');
+    if(itemTotalEl){
+      itemTotalEl.textContent = (totals.unitPrice * it.qty).toFixed(0);
+    }
   });
-  document.querySelectorAll('.qty-decr').forEach(b=>{
-    b.addEventListener('click', (e)=>{
-      const id = b.dataset.id;
-      const idx = findCartItemIndex(id);
-      if(idx !== -1){
-        cart[idx].qty = Math.max(0, cart[idx].qty - 1);
-        if(cart[idx].qty === 0) cart.splice(idx,1);
-        saveCart(); refreshCartUI();
-      }
-    });
-  });
+
+  // attach remove handlers
   document.querySelectorAll('.remove-item').forEach(b=>{
     b.addEventListener('click', (e)=>{
       const id = b.dataset.id;
@@ -763,7 +755,7 @@ function refreshCartUI(){
   });
 }
 
-/* Open / Close cart section */
+/* Open / Close cart */
 function openCart(){
   cartSection.style.display = ''; cartSection.setAttribute('aria-hidden','false');
   cartSection.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -773,35 +765,40 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout: build message and open WhatsApp */
+/* Checkout via WhatsApp */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
   const totals = computeCartTotals(pm);
-  // prepare message
   let msg = `Order from Okurimono.in%0A`;
   msg += `Payment: ${pm.toUpperCase()}%0A`;
+  msg += `Unit price per item (based on total items ${totals.totalQty}): ₹${totals.unitPrice}%0A`;
   msg += `Items:%0A`;
   cart.forEach(it => {
-    const up = unitPriceForQty(it.qty);
-    msg += `- ${encodeURIComponent(it.title)} x ${it.qty} @ ₹${up} = ₹${up*it.qty}%0A`;
+    msg += `- ${encodeURIComponent(it.title)} x ${it.qty} @ ₹${totals.unitPrice} = ₹${totals.unitPrice*it.qty}%0A`;
   });
   msg += `%0ATotal Items: ${totals.totalQty}%0A`;
   msg += `Items total: ₹${totals.itemsTotal}%0A`;
   if(totals.codFee) msg += `COD fee: ₹${totals.codFee}%0A`;
-  if(totals.advanceNow) msg += `Advance now: ₹${totals.advanceNow}%0A (Remaining payable on delivery: ₹${(totals.grandTotal - totals.advanceNow)})%0A`;
+  if(totals.advanceNow) msg += `Advance now: ₹${totals.advanceNow}%0A (Remaining on delivery: ₹${(totals.grandTotal - totals.advanceNow)})%0A`;
   msg += `Grand total: ₹${totals.grandTotal}%0A`;
   msg += `%0APlease pack securely. Note: If product damaged on delivery, I will share an unboxing video for replacement.%0A`;
-  // open wa
   const url = `https://wa.me/${WA_PHONE}?text=${msg}`;
   window.open(url, '_blank');
 }
 
-/* =========================
-   Other existing functions re-used: lightbox, scroller, GSAP, mobile nav
-   Minimal changes: bind add-to-cart buttons in bindInteractiveElements
-   ========================= */
+/* toast */
+let toastTimeout;
+function showToast(text){
+  clearTimeout(toastTimeout);
+  toastEl.textContent = text;
+  toastEl.style.display = 'block';
+  toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1600);
+}
 
+/* =========================
+   Lightbox + interactions (kept)
+   ========================= */
 let clickableItems = [];
 let currentIndex = -1;
 
@@ -834,13 +831,12 @@ function bindInteractiveElements(){
     });
   });
 
-  // existing buy-btn (non-cart) continue to open WhatsApp as before (kept)
+  // keep existing buy-btn (non-cart) behavior: open WhatsApp for interest
   document.querySelectorAll('.buy-btn:not(.add-to-cart)').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
       const id = btn.dataset.id || '';
       const title = btn.dataset.title || 'Poster';
-      // old behavior: open wa with small message about poster interest
       const base = `Hi I am interested in your poster collection! Poster: ${title} (ID: ${id})`;
       const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
       window.open(url, '_blank');
@@ -858,7 +854,6 @@ function bindInteractiveElements(){
   });
 }
 
-/* lightbox functions */
 function openLightbox(index){
   if(index < 0 || index >= clickableItems.length) return;
   currentIndex = index;
@@ -899,12 +894,6 @@ function initAutoScroller(){
     scroller.addEventListener('mouseenter', ()=> cancelAnimationFrame(rafId));
     scroller.addEventListener('mouseleave', ()=> { rafId = requestAnimationFrame(step); });
   }
-  // pointer drag
-  let isDown = false, startX=0;
-  scroller.addEventListener('pointerdown', (e)=>{ isDown=true; startX=e.clientX; scroller.style.cursor='grabbing'; });
-  scroller.addEventListener('pointermove', (e)=>{ if(!isDown) return; const dx = e.clientX - startX; scroller.style.transform = `translateX(${dx - pos}px)`; });
-  scroller.addEventListener('pointerup', ()=>{ isDown=false; scroller.style.cursor=''; });
-  scroller.addEventListener('pointerleave', ()=>{ isDown=false; scroller.style.cursor=''; });
 }
 
 /* Mobile nav */
@@ -934,7 +923,7 @@ function setupMobileNav(){
   });
 }
 
-/* GSAP simple */
+/* GSAP */
 function initGSAP(){
   gsap.registerPlugin(ScrollTrigger);
   gsap.from('.hero-headline', {opacity:0,y:30,duration:0.8});
@@ -961,14 +950,10 @@ function updateActiveNavOnScroll(){
 window.addEventListener('scroll', updateActiveNavOnScroll);
 window.addEventListener('resize', updateActiveNavOnScroll);
 
-/* =========================
-   Init on DOMContentLoaded
-   ========================= */
+/* Init */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // load saved cart
   loadCart();
 
-  // render content
   renderHeroImages();
   renderScrollingStrip();
   renderMainProduct();
@@ -982,7 +967,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initGSAP();
   updateActiveNavOnScroll();
 
-  // restore cart UI
   refreshCartUI();
 
   // promo loop
@@ -996,10 +980,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }});
   }, 2600);
 
-  // open cart button
+  // cart open/close
   openCartBtn.addEventListener('click', ()=> openCart());
-
-  // close cart
   closeCartBtn.addEventListener('click', ()=> closeCart());
 
   // payment method change updates totals
@@ -1022,9 +1004,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     window.open(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`, '_blank');
   });
 
-  // rebind buy buttons (ensures add-to-cart and old buy behavior)
   bindInteractiveElements();
 });
+
+/* end */
 </script>
 </body>
 </html>
