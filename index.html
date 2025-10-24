@@ -125,7 +125,7 @@
   .custom-print .left{flex:1 1 360px;min-width:260px}
   .custom-print .right{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
   .custom-print .fancy-title{font-family:'Anton', sans-serif;font-size:26px;background: linear-gradient(90deg,#00C6A7,#006E6A);-webkit-background-clip:text;color:transparent;margin-bottom:8px}
-  .custom-print .custom-desc{color:var(--muted);line-height:1.5; margin-bottom:10px}
+  .custom-print .custom-desc{Color:var(--muted);line-height:1.5; margin-bottom:10px}
   /* larger tap targets on mobile */
   .custom-print .contact-cta{display:flex;gap:10px;flex-wrap:wrap}
   .custom-print .contact-cta .btn{padding:12px 18px;border-radius:12px;font-weight:800}
@@ -208,7 +208,7 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* toast */
+  /* small toast */
   .toast {
     position: fixed;
     left: 50%;
@@ -622,35 +622,40 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* === Cart logic (quantity selectable; default qty = 1) === */
+/* === Cart logic (ONLY changed as requested) === */
 
+/* find index helper */
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
 }
 
-// when adding: if exists, increment qty; otherwise add with qty = 1
+/* Add to cart:
+   - default quantity when adding a new item is 1
+   - if item already exists, DO NOT increment; leave as-is and show 'Already in cart'
+   This is the explicit behavior you requested.
+*/
 function addToCart(item){
   const id = String(item.id);
   const idx = findCartItemIndex(id);
   if(idx === -1){
     cart.push({ id, title: item.title, src: item.src, qty: 1 }); // default qty = 1
+    saveCart();
+    refreshCartUI();
+    showToast('Added to cart');
   } else {
-    cart[idx].qty += 1;
+    // do not increment automatically; keep quantity as-is
+    showToast('Already in cart');
   }
-  saveCart();
-  refreshCartUI();
-  showToast('Added to cart');
 }
 
+/* Update qty and removal (qty change allowed in cart UI) */
 function updateQty(id, qty){
   const idx = findCartItemIndex(id);
   if(idx === -1) return;
-  cart[idx].qty = Math.max(0, Math.floor(qty));
-  if(cart[idx].qty === 0) cart.splice(idx,1);
+  cart[idx].qty = Math.max(1, Math.floor(qty)); // ensure min 1
   saveCart();
   refreshCartUI();
 }
-
 function removeFromCart(id){
   const idx = findCartItemIndex(id);
   if(idx === -1) return;
@@ -659,9 +664,7 @@ function removeFromCart(id){
   refreshCartUI();
 }
 
-/* Pricing rules depend on total items in cart (sum of qtys).
-   Precedence: if totalItems >= 6 && <= 15 => 43 (checked first)
-*/
+/* Pricing rules unchanged; precedence kept: >=6 && <=15 => 43 */
 function unitPriceBasedOnTotalItems(totalItems){
   if(totalItems >= 6 && totalItems <= 15) return 43;
   if(totalItems <= 3) return 60;
@@ -669,10 +672,19 @@ function unitPriceBasedOnTotalItems(totalItems){
   return 43;
 }
 
+/* computeCartTotals:
+   - returns zeros if totalQty < 3 (we do not compute totals until min 3 items)
+   - otherwise compute normally
+*/
 function computeCartTotals(paymentMethod){
   let itemsTotal = 0;
   let totalQty = 0;
   cart.forEach(item => { totalQty += item.qty; });
+
+  // Enforce minimum items rule for computing totals: totals are only valid when totalQty >= 3
+  if(totalQty < 3){
+    return { itemsTotal: 0, codFee: 0, advanceNow: 0, grandTotal: 0, totalQty, unitPrice: 0 };
+  }
 
   const unit = unitPriceBasedOnTotalItems(totalQty || 0);
   cart.forEach(item => { itemsTotal += unit * item.qty; });
@@ -687,9 +699,11 @@ function computeCartTotals(paymentMethod){
   return { itemsTotal, codFee, advanceNow, grandTotal, totalQty, unitPrice: unit };
 }
 
+/* Persistence helpers */
 function saveCart(){ try { sessionStorage.setItem('ok_cart_v1', JSON.stringify(cart)); } catch(e){} }
 function loadCart(){ try { const raw = sessionStorage.getItem('ok_cart_v1'); if(raw) cart = JSON.parse(raw) || []; } catch(e){} }
 
+/* Refresh cart UI: uses computeCartTotals (which returns zeros for totalQty < 3) */
 function refreshCartUI(){
   const count = cart.reduce((s,it)=>s+it.qty, 0);
   cartCountEl.textContent = count;
@@ -718,7 +732,6 @@ function refreshCartUI(){
     `).join('');
   }
 
-  // update totals
   const pm = paymentMethodEl.value;
   const totals = computeCartTotals(pm);
   itemsTotalEl.textContent = `₹${totals.itemsTotal.toFixed(0)}`;
@@ -726,16 +739,14 @@ function refreshCartUI(){
   advanceNowEl.textContent = totals.advanceNow ? `₹${totals.advanceNow}` : '₹0';
   grandTotalEl.textContent = `₹${(totals.grandTotal).toFixed(0)}`;
 
-  // set item totals per rendered items and bind qty buttons/inputs
   document.querySelectorAll('.cart-item').forEach((el, idx)=>{
     const it = cart[idx];
     const itemTotalEl = el.querySelector('.item-total');
     const countInput = el.querySelector('[data-count-input]');
     if(itemTotalEl){
-      itemTotalEl.textContent = (totals.unitPrice * it.qty).toFixed(0);
+      itemTotalEl.textContent = totals.unitPrice ? (totals.unitPrice * it.qty).toFixed(0) : '0';
     }
     if(countInput) countInput.value = it.qty;
-    // input change handler
     if(countInput) {
       countInput.addEventListener('change', (e)=>{
         let v = parseInt(countInput.value) || 1;
@@ -745,7 +756,6 @@ function refreshCartUI(){
     }
   });
 
-  // attach event listeners
   document.querySelectorAll('.qty-incr').forEach(b=>{
     b.addEventListener('click', ()=>{
       const id = b.dataset.id;
@@ -758,7 +768,7 @@ function refreshCartUI(){
       const id = b.dataset.id;
       const idx = findCartItemIndex(id);
       if(idx !== -1){
-        cart[idx].qty = Math.max(1, cart[idx].qty - 1); // min qty = 1
+        cart[idx].qty = Math.max(1, cart[idx].qty - 1);
         saveCart(); refreshCartUI();
       }
     });
@@ -771,6 +781,7 @@ function refreshCartUI(){
   });
 }
 
+/* Open / close cart */
 function openCart(){
   cartSection.style.display = ''; cartSection.setAttribute('aria-hidden','false');
   cartSection.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -780,27 +791,24 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout updated: enforce minimum total items = 3 for delivery.
-   If totalQty < 3 -> alert and block checkout.
-   WhatsApp message: include first cart item's image URL at the top (note: cannot attach file via wa.me,
-   but including URL can produce a preview).
+/* Checkout:
+   - block if totalQty < 3 (alert)
+   - include first item image URL at top of WA message (note: wa.me cannot attach files)
 */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
   const totals = computeCartTotals(pm);
 
-  // Enforce minimum cart quantity for delivery
   if(totals.totalQty < 3){
     alert('Minimum order is 3 posters for delivery. Please add more items to proceed.');
     return;
   }
 
-  // Build message. Include first item's image URL at the top to encourage preview.
   const firstItem = cart[0];
   let msgParts = [];
   if(firstItem && firstItem.src){
-    msgParts.push(`${firstItem.src}`); // plain URL first (may create preview)
+    msgParts.push(`${firstItem.src}`);
   }
   msgParts.push(`*Order from Okurimono.in*`);
   msgParts.push(`Payment: ${pm.toUpperCase()}`);
@@ -816,12 +824,12 @@ function checkout(){
   msgParts.push(`Grand total: ₹${totals.grandTotal}`);
   msgParts.push(`\nPlease pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
 
-  // join and encode
   const finalMessage = encodeURIComponent(msgParts.join('\n'));
   const url = `https://wa.me/${WA_PHONE}?text=${finalMessage}`;
   window.open(url, '_blank');
 }
 
+/* toast */
 let toastTimeout;
 function showToast(text){
   clearTimeout(toastTimeout);
@@ -830,7 +838,7 @@ function showToast(text){
   toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
 }
 
-/* === Lightbox + interactions (kept) === */
+/* === Lightbox + interactions (unchanged) === */
 let clickableItems = [];
 let currentIndex = -1;
 
@@ -852,7 +860,7 @@ function bindInteractiveElements(){
     it.el.onclick = (e)=> { e.stopPropagation(); const findIndex = clickableItems.findIndex(x=>x.el===it.el); if(findIndex!==-1) openLightbox(findIndex); };
   });
 
-  // add-to-cart
+  // add-to-cart buttons
   document.querySelectorAll('.add-to-cart').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -953,7 +961,7 @@ function setupMobileNav(){
   });
 }
 
-/* GSAP animations (kept as before) */
+/* GSAP animations (kept) */
 function initGSAP(){
   gsap.registerPlugin(ScrollTrigger);
   gsap.defaults({ease:'power1.out'});
