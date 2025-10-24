@@ -125,7 +125,7 @@
   .custom-print .left{flex:1 1 360px;min-width:260px}
   .custom-print .right{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
   .custom-print .fancy-title{font-family:'Anton', sans-serif;font-size:26px;background: linear-gradient(90deg,#00C6A7,#006E6A);-webkit-background-clip:text;color:transparent;margin-bottom:8px}
-  .custom-print .custom-desc{Color:var(--muted);line-height:1.5; margin-bottom:10px}
+  .custom-print .custom-desc{color:var(--muted);line-height:1.5; margin-bottom:10px}
   /* larger tap targets on mobile */
   .custom-print .contact-cta{display:flex;gap:10px;flex-wrap:wrap}
   .custom-print .contact-cta .btn{padding:12px 18px;border-radius:12px;font-weight:800}
@@ -464,14 +464,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
-/* === Data arrays (unchanged) === */
+/* === Data arrays (framesData now include cat to support frame filtering) === */
 const heroUploadedImages = [
-  "https://mo4dwpnnzycp1ede.public.blob.vercel-storage.com/heroImg1.png",
-  "https://mo4dwpnnzycp1ede.public.blob.vercel-storage.com/heroImg2.png",
-  "https://mo4dwpnnzycp1ede.public.blob.vercel-storage.com/heroImg3.png"
+  '/mnt/data/d0f60b4e-88a4-4e7d-a465-1b657139c526.png',
+  '/mnt/data/03304bd0-deca-48e7-a729-5079225054e1.png',
+  '/mnt/data/326f1b7c-c663-4878-afe5-7238e68f55af.png'
 ];
-
-
 
 const posters = [
   {id:1, src:'https://picsum.photos/seed/an1/420/600', title:'Anime Sunset', cat:'anime'},
@@ -500,10 +498,13 @@ const combos = [
   {id:'c3', src:'https://picsum.photos/seed/c3/600/400', title:'Combo 3'}
 ];
 
+/* === IMPORTANT CHANGE: framesData now has a 'cat' field so filter buttons can filter frames ===
+   Map frames to categories (change cat values as you like).
+*/
 const framesData = [
-  {id:'f1', src:'https://picsum.photos/seed/f1/600/800', title:'Framed Black', frameType:'black'},
-  {id:'f2', src:'https://picsum.photos/seed/f2/600/800', title:'Framed White', frameType:'white'},
-  {id:'f3', src:'https://picsum.photos/seed/f3/600/800', title:'Framed Black 2', frameType:'black'}
+  {id:'f1', src:'https://picsum.photos/seed/f1/600/800', title:'Framed Black', frameType:'black', cat:'cars'},
+  {id:'f2', src:'https://picsum.photos/seed/f2/600/800', title:'Framed White', frameType:'white', cat:'anime'},
+  {id:'f3', src:'https://picsum.photos/seed/f3/600/800', title:'Framed Black 2', frameType:'black', cat:'music'}
 ];
 
 const WA_PHONE = '918617743811';
@@ -602,10 +603,12 @@ function renderCombos(){
   }).join('');
 }
 
-function renderFrames(){
-  frameGrid.innerHTML = framesData.map(f => {
+/* Render frames with optional category filter */
+function renderFrames(category=''){
+  const filtered = category ? framesData.filter(f => f.cat === category) : framesData.slice();
+  frameGrid.innerHTML = filtered.map(f => {
     const overlay = `<div class="frame-overlay"><div class="frame ${esc(f.frameType)}"></div></div>`;
-    return `<div class="frame-wrap" data-id="${esc(f.id)}">
+    return `<div class="frame-wrap" data-id="${esc(f.id)}" data-cat="${esc(f.cat||'')}">
       <img src="${esc(f.src)}" alt="${esc(f.title)}">
       ${overlay}
       <div class="buy-wrap"><button class="buy-btn add-to-cart" data-id="${esc(f.id)}" data-title="${esc(f.title)}" data-src="${esc(f.src)}">Add to cart</button></div>
@@ -624,7 +627,7 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* === Cart logic (ONLY changed as requested) === */
+/* === Cart logic (unchanged from your last requested behavior) === */
 
 /* find index helper */
 function findCartItemIndex(id){
@@ -633,8 +636,7 @@ function findCartItemIndex(id){
 
 /* Add to cart:
    - default quantity when adding a new item is 1
-   - if item already exists, DO NOT increment; leave as-is and show 'Already in cart'
-   This is the explicit behavior you requested.
+   - if item already exists, do not increment automatically (toast 'Already in cart')
 */
 function addToCart(item){
   const id = String(item.id);
@@ -645,7 +647,6 @@ function addToCart(item){
     refreshCartUI();
     showToast('Added to cart');
   } else {
-    // do not increment automatically; keep quantity as-is
     showToast('Already in cart');
   }
 }
@@ -666,7 +667,7 @@ function removeFromCart(id){
   refreshCartUI();
 }
 
-/* Pricing rules unchanged; precedence kept: >=6 && <=15 => 43 */
+/* Pricing rules unchanged */
 function unitPriceBasedOnTotalItems(totalItems){
   if(totalItems >= 6 && totalItems <= 15) return 43;
   if(totalItems <= 3) return 60;
@@ -674,16 +675,12 @@ function unitPriceBasedOnTotalItems(totalItems){
   return 43;
 }
 
-/* computeCartTotals:
-   - returns zeros if totalQty < 3 (we do not compute totals until min 3 items)
-   - otherwise compute normally
-*/
+/* computeCartTotals with min qty guard (>=3) */
 function computeCartTotals(paymentMethod){
   let itemsTotal = 0;
   let totalQty = 0;
   cart.forEach(item => { totalQty += item.qty; });
 
-  // Enforce minimum items rule for computing totals: totals are only valid when totalQty >= 3
   if(totalQty < 3){
     return { itemsTotal: 0, codFee: 0, advanceNow: 0, grandTotal: 0, totalQty, unitPrice: 0 };
   }
@@ -701,11 +698,9 @@ function computeCartTotals(paymentMethod){
   return { itemsTotal, codFee, advanceNow, grandTotal, totalQty, unitPrice: unit };
 }
 
-/* Persistence helpers */
 function saveCart(){ try { sessionStorage.setItem('ok_cart_v1', JSON.stringify(cart)); } catch(e){} }
 function loadCart(){ try { const raw = sessionStorage.getItem('ok_cart_v1'); if(raw) cart = JSON.parse(raw) || []; } catch(e){} }
 
-/* Refresh cart UI: uses computeCartTotals (which returns zeros for totalQty < 3) */
 function refreshCartUI(){
   const count = cart.reduce((s,it)=>s+it.qty, 0);
   cartCountEl.textContent = count;
@@ -783,7 +778,6 @@ function refreshCartUI(){
   });
 }
 
-/* Open / close cart */
 function openCart(){
   cartSection.style.display = ''; cartSection.setAttribute('aria-hidden','false');
   cartSection.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -793,10 +787,7 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout:
-   - block if totalQty < 3 (alert)
-   - include first item image URL at top of WA message (note: wa.me cannot attach files)
-*/
+/* Checkout guard and WA message (unchanged) */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
@@ -840,7 +831,7 @@ function showToast(text){
   toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
 }
 
-/* === Lightbox + interactions (unchanged) === */
+/* === Lightbox + interactions === */
 let clickableItems = [];
 let currentIndex = -1;
 
@@ -1007,6 +998,21 @@ function updateActiveNavOnScroll(){
 window.addEventListener('scroll', updateActiveNavOnScroll);
 window.addEventListener('resize', updateActiveNavOnScroll);
 
+/* Setup filter buttons to filter both gallery and frames */
+function setupFilters(){
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat || '';
+      activeCategory = cat;
+      // re-render both poster gallery and frames (frames filtered by cat)
+      renderGallery(1);
+      renderFrames(cat);
+    });
+  });
+}
+
 /* Init */
 document.addEventListener('DOMContentLoaded', ()=>{
   loadCart();
@@ -1015,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   renderScrollingStrip();
   renderMainProduct();
   renderCombos();
-  renderFrames();
+  renderFrames(); // show all frames initially
   renderGallery(1);
 
   bindInteractiveElements();
@@ -1023,6 +1029,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   setupMobileNav();
   initGSAP();
   updateActiveNavOnScroll();
+
+  setupFilters(); // <-- important: wire up filter buttons to filter frames too
 
   refreshCartUI();
 
@@ -1055,7 +1063,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
-
-
-
-
