@@ -166,13 +166,11 @@
   .summary-row { display:flex; justify-content:space-between; padding:6px 0; color:var(--muted); }
   .summary-row.total { font-weight:800; color:var(--text); }
 
-  /* Lightbox styles — improved for mobile */
-  #lightbox { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
+  #lightbox { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; }
   #lightbox.active { display: flex; }
   #lightbox .backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.95); }
-  #lightbox .content { position: relative; max-width: 920px; width: min(92%, 920px); max-height: calc(100vh - 40px); margin: 0 auto; z-index: 2; text-align: center; color: #fff; padding: 12px; overflow: auto; border-radius:10px }
-  /* Make image scale responsively and never overflow the viewport on mobile */
-  #lightbox img { width: auto; height: auto; max-width: 100%; max-height: calc(100vh - 160px); object-fit: contain; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+  #lightbox .content { position: relative; max-width: 900px; width: 92%; margin: 20px; z-index: 2; text-align: center; color: #fff; }
+  #lightbox img { width: 100%; max-height: 65vh; object-fit:contain; border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
   #lightbox .desc { margin-top: 10px; color: #fff; font-size: 14px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; max-height: 22vh; overflow:auto; }
   #lightbox .close { position: absolute; right: -12px; top: -12px; background: rgba(255,255,255,0.06); color: #fff; border-radius: 50%; width:44px; height:44px; display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px; }
   #lightbox .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; left: 0; z-index: 3; display:flex;justify-content:space-between;pointer-events:none; }
@@ -201,10 +199,6 @@
     .custom-print .contact-cta{width:100%;justify-content:flex-start}
     .cart-item { flex-direction:column; align-items:flex-start; }
     .cart-item img { width:100%; height:auto; }
-
-    /* ensure lightbox content fits on narrow screens */
-    #lightbox .content { width: 94%; max-height: calc(100vh - 32px); padding: 10px; }
-    #lightbox img { max-height: calc(100vh - 140px); }
   }
   @media(max-width:560px){
     .hero-headline{font-size:28px}
@@ -215,41 +209,25 @@
     .hero-card{min-height:140px}
     .contact{flex-direction:column;align-items:flex-start}
     .custom-print .right{display:block}
-
-    #lightbox img { max-height: calc(100vh - 120px); }
   }
   @media(prefers-reduced-motion: reduce){
     * { animation: none !important; transition: none !important; }
   }
 
-  /* Enhanced toast (notification) */
   .toast {
     position: fixed;
-    right: 22px;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 28px;
-    background: linear-gradient(180deg, rgba(20,20,20,0.98), rgba(15,15,15,0.9));
+    background: rgba(0,0,0,0.8);
     color: #fff;
-    padding: 10px 12px;
-    border-radius: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
     z-index: 99999;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     font-weight:700;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    min-width:220px;
-    max-width:360px;
-    transform: translateY(20px) scale(0.98);
-    opacity: 0;
-    pointer-events: none;
+    display:none;
   }
-  .toast.show { opacity:1; transform: translateY(0) scale(1); pointer-events:auto; transition: transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms; }
-  .toast .thumb { width:48px; height:48px; border-radius:8px; overflow:hidden; flex-shrink:0; background:linear-gradient(90deg,var(--accent1),var(--accent3)); display:flex;align-items:center;justify-content:center }
-  .toast .thumb img{width:100%;height:100%;object-fit:cover}
-  .toast .body { display:flex;flex-direction:column; gap:4px; }
-  .toast .body .title { font-weight:800; font-size:14px; color:var(--text); }
-  .toast .body .meta { color:var(--muted); font-size:13px; font-weight:700 }
-  .toast .close-toast { margin-left:auto; background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:18px }
 </style>
 </head>
 <body>
@@ -469,14 +447,7 @@
   </div>
 
   <!-- toast -->
-  <div id="toast" class="toast" aria-live="polite" aria-atomic="true">
-    <div class="thumb"><img src="https://picsum.photos/seed/thumb/80/80" alt="thumb"></div>
-    <div class="body">
-      <div class="title">Item added</div>
-      <div class="meta">1 × Poster</div>
-    </div>
-    <button class="close-toast" aria-label="Close notification">✕</button>
-  </div>
+  <div id="toast" class="toast">Already in cart</div>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -547,12 +518,8 @@ const paymentMethodEl = document.getElementById('paymentMethod');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const closeCartBtn = document.getElementById('closeCartBtn');
 const toastEl = document.getElementById('toast');
-const toastThumb = toastEl.querySelector('.thumb img');
-const toastTitleEl = toastEl.querySelector('.title');
-const toastMetaEl = toastEl.querySelector('.meta');
-const toastCloseBtn = toastEl.querySelector('.close-toast');
 
-function esc(s){ return String(s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* === Renderers === */
 function renderHeroImages(){
@@ -658,10 +625,10 @@ function addToCart(item){
     cart.push({ id, title: item.title, src: item.src, qty: 1 }); // default qty = 1
     saveCart();
     refreshCartUI();
-    // show enhanced toast with item info (no native alert)
-    showToast({ title: item.title, qty: 1, src: item.src });
+    try { alert('Added to cart successfully!'); } catch(e){}
+    showToast('Added to cart');
   } else {
-    showToast({ title: item.title, qty: cart[idx].qty, src: item.src, already:true });
+    showToast('Already in cart');
   }
 }
 
@@ -828,35 +795,19 @@ function checkout(){
   msgParts.push(`Grand total: ₹${totals.grandTotal}`);
   msgParts.push(`Please pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
 
-  const finalMessage = encodeURIComponent(msgParts.join('
-'));
+  const finalMessage = encodeURIComponent(msgParts.join('\n'));
   const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${finalMessage}`;
   window.open(url, '_blank');
 }
 
-/* Enhanced toast behavior */
+/* toast */
 let toastTimeout;
-function showToast(payload){
-  // accepts string or object { title, qty, src, already }
-  const p = typeof payload === 'string' ? { title: payload, qty: 1 } : (payload || {});
-  const title = p.title || 'Item added';
-  const qty = p.qty || 1;
-  const src = p.src || 'https://picsum.photos/seed/thumb/80/80';
-  const already = !!p.already;
-
-  // update UI
-  toastThumb.src = src;
-  toastTitleEl.textContent = already ? `${title} (in cart)` : `${title}`;
-  toastMetaEl.textContent = `${qty} × added`;
-
-  // show with animation class
-  toastEl.classList.add('show');
+function showToast(text){
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(()=>{ toastEl.classList.remove('show'); }, 1800);
+  toastEl.textContent = text;
+  toastEl.style.display = 'block';
+  toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
 }
-
-// allow manual close
-toastCloseBtn.addEventListener('click', ()=>{ toastEl.classList.remove('show'); clearTimeout(toastTimeout); });
 
 /* === Lightbox + interactions === */
 let clickableItems = [];
@@ -920,16 +871,10 @@ function openLightbox(index){
   lbDesc.innerHTML = `<strong style="display:block;margin-bottom:6px">${esc(it.title)}</strong>`;
   lightbox.setAttribute('aria-hidden','false');
   lightbox.classList.add('active');
-  // prevent background scroll on mobile so the image fits neatly
-  document.body.style.overflow = 'hidden';
   gsap.fromTo('#lightbox .backdrop', {opacity:0}, {opacity:1, duration:0.28});
   gsap.fromTo('#lbContent', {y:30, opacity:0}, {y:0, opacity:1, duration:0.36, delay:0});
 }
-function closeLightbox(){
-  lightbox.setAttribute('aria-hidden','true');
-  gsap.to('#lbContent', {y:20, opacity:0, duration:0.22});
-  gsap.to('#lightbox .backdrop', {opacity:0, duration:0.22, onComplete: ()=> { lightbox.classList.remove('active'); lbImage.src = ''; currentIndex = -1; document.body.style.overflow = ''; }});
-}
+function closeLightbox(){ lightbox.setAttribute('aria-hidden','true'); gsap.to('#lbContent', {y:20, opacity:0, duration:0.22}); gsap.to('#lightbox .backdrop', {opacity:0, duration:0.22, onComplete: ()=> { lightbox.classList.remove('active'); lbImage.src = ''; currentIndex = -1; }}); }
 lbClose.addEventListener('click', closeLightbox);
 lbBackdrop.addEventListener('click', closeLightbox);
 document.addEventListener('keydown', (e)=>{ if(lightbox.classList.contains('active')){ if(e.key === 'Escape') closeLightbox(); if(e.key === 'ArrowLeft') prevItem(); if(e.key === 'ArrowRight') nextItem(); } });
