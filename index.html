@@ -170,7 +170,7 @@
   /* buy button */
   .buy-btn{background:linear-gradient(90deg,var(--accent1),var(--accent3));color:#fff;border:0;padding:8px 12px;border-radius:20px;cursor:pointer;font-weight:700}
 
-  /* Payment select black background (requested) */
+  /* Payment select black background (requested previously) */
   #paymentMethod { background: #000 !important; color: #fff !important; }
 
   /* responsive/mobile */
@@ -208,7 +208,7 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* small toast for "already in cart" */
+  /* small toast */
   .toast {
     position: fixed;
     left: 50%;
@@ -382,7 +382,7 @@
     </div>
   </section>
 
-  <!-- CART SECTION (new) -->
+  <!-- CART SECTION -->
   <section class="section" id="cartSection" aria-hidden="true" style="display:none;">
     <div class="container">
       <div class="cart-section">
@@ -430,7 +430,6 @@
           <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
         </div>
         <div class="col" style="min-width:220px">
-          <!-- 1f: Business hours all day open -->
           <p style="color:var(--muted)"><strong>Business Hours</strong></p>
           <p>Open all day — 24/7</p>
           <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
@@ -457,7 +456,7 @@
     </div>
   </div>
 
-  <!-- small toast -->
+  <!-- toast -->
   <div id="toast" class="toast">Already in cart</div>
 
   <!-- GSAP -->
@@ -465,9 +464,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
-/* =========================
-   Existing data arrays (kept)
-   ========================= */
+/* === Data arrays (unchanged) === */
 const heroUploadedImages = [
   '/mnt/data/d0f60b4e-88a4-4e7d-a465-1b657139c526.png',
   '/mnt/data/03304bd0-deca-48e7-a729-5079225054e1.png',
@@ -487,7 +484,6 @@ const posters = [
   {id:10, src:'https://picsum.photos/seed/extra4/420/600', title:'Extra 4', cat:'anime'}
 ];
 
-// scrolling strip posters (separate)
 const scrollingPosters = [
   {id:'s1', src:'https://picsum.photos/seed/strip1/420/260', title:'Strip Poster 1'},
   {id:'s2', src:'https://picsum.photos/seed/strip2/420/260', title:'Strip Poster 2'},
@@ -510,13 +506,8 @@ const framesData = [
 
 const WA_PHONE = '918617743811';
 
-/* =========================
-   Cart implementation
-   - Quantity per poster fixed to 1 only (per request)
-   - Pricing depends on total items in cart (see rules)
-   ========================= */
-
-let cart = []; // array of items -> each item { id, title, src, qty } but qty stays 1
+/* === Cart state & DOM refs === */
+let cart = []; // items: { id, title, src, qty }
 const galleryGrid = document.getElementById('galleryGrid');
 const paginationEl = document.getElementById('pagination');
 const heroCardsEl = document.getElementById('heroCards');
@@ -540,7 +531,7 @@ const toastEl = document.getElementById('toast');
 
 function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* RENDERERS (unchanged structure; add-to-cart uses add-to-cart buttons that now fix qty=1) */
+/* === Renderers === */
 function renderHeroImages(){
   heroCardsEl.innerHTML = heroUploadedImages.map((src,i)=>`
     <div class="hero-card" data-idx="${i}">
@@ -631,27 +622,33 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* CART LOGIC (changes applied) */
+/* === Cart logic (modified to allow quantity selection) === */
 
-/* We treat each poster's quantity as fixed to 1.
-   If user tries to add same item again we show a small toast and ignore (no quantity increment).
-*/
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
 }
 
+// when adding: if exists, increment qty; otherwise add with qty = 1
 function addToCart(item){
   const id = String(item.id);
   const idx = findCartItemIndex(id);
   if(idx === -1){
-    cart.push({ id, title: item.title, src: item.src, qty: 1 }); // qty stays 1
-    saveCart();
-    refreshCartUI();
-    showToast('Added to cart');
+    cart.push({ id, title: item.title, src: item.src, qty: 1 });
   } else {
-    // quantity fixed to 1 — user cannot add duplicate quantities of the same poster
-    showToast('Item already in cart');
+    cart[idx].qty += 1;
   }
+  saveCart();
+  refreshCartUI();
+  showToast('Added to cart');
+}
+
+function updateQty(id, qty){
+  const idx = findCartItemIndex(id);
+  if(idx === -1) return;
+  cart[idx].qty = Math.max(0, Math.floor(qty));
+  if(cart[idx].qty === 0) cart.splice(idx,1);
+  saveCart();
+  refreshCartUI();
 }
 
 function removeFromCart(id){
@@ -663,22 +660,12 @@ function removeFromCart(id){
 }
 
 /* Pricing rules depend on total items in cart (sum of qtys).
-   You provided overlapping rules for total items = 6. To resolve without asking,
-   we give precedence to the ">=6 and <=15 => ₹43" rule (so totalItems === 6 => ₹43).
-   Implementation order below enforces that precedence.
-   Rules implemented:
-     - totalItems <= 3  => unit price 60
-     - else if totalItems <= 6 => unit price 50
-     - else if totalItems >=6 && totalItems <=15 => unit price 43  (precedence applied first)
-   Note: Because of overlap in your instructions at '6', we check the >=6..<=15 branch first,
-   so 6 will be treated as ₹43.
+   Keep the precedence decision you previously accepted: if totalItems >=6 && <=15 => ₹43 (checked first).
 */
 function unitPriceBasedOnTotalItems(totalItems){
-  // check 1d precedence first (>=6 && <=15 => 43)
   if(totalItems >= 6 && totalItems <= 15) return 43;
   if(totalItems <= 3) return 60;
   if(totalItems <= 6) return 50;
-  // fallback
   return 43;
 }
 
@@ -700,11 +687,9 @@ function computeCartTotals(paymentMethod){
   return { itemsTotal, codFee, advanceNow, grandTotal, totalQty, unitPrice: unit };
 }
 
-/* persist in sessionStorage */
 function saveCart(){ try { sessionStorage.setItem('ok_cart_v1', JSON.stringify(cart)); } catch(e){} }
 function loadCart(){ try { const raw = sessionStorage.getItem('ok_cart_v1'); if(raw) cart = JSON.parse(raw) || []; } catch(e){} }
 
-/* refresh cart UI */
 function refreshCartUI(){
   const count = cart.reduce((s,it)=>s+it.qty, 0);
   cartCountEl.textContent = count;
@@ -713,15 +698,19 @@ function refreshCartUI(){
   if(cart.length === 0){
     cartList.innerHTML = `<div style="color:var(--muted)">Your cart is empty. Add posters from the gallery.</div>`;
   } else {
-    // each item qty is shown as fixed "1"
     cartList.innerHTML = cart.map(it => `
       <div class="cart-item" data-id="${esc(it.id)}">
         <img src="${esc(it.src)}" alt="${esc(it.title)}">
         <div style="flex:1">
           <div class="title">${esc(it.title)}</div>
-          <div style="color:var(--muted);font-size:13px;margin-top:6px">Quantity is fixed to 1 per poster.</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px">Select quantity below.</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <div class="qty-controls">
+            <button class="qty-decr" data-id="${esc(it.id)}">-</button>
+            <div style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);min-width:34px;text-align:center" data-count>${it.qty}</div>
+            <button class="qty-incr" data-id="${esc(it.id)}">+</button>
+          </div>
           <div style="margin-top:6px;color:var(--muted);font-size:14px">Item total: ₹<span class="item-total">0</span></div>
           <div><button class="btn btn-outline remove-item" data-id="${esc(it.id)}">Remove</button></div>
         </div>
@@ -737,25 +726,44 @@ function refreshCartUI(){
   advanceNowEl.textContent = totals.advanceNow ? `₹${totals.advanceNow}` : '₹0';
   grandTotalEl.textContent = `₹${(totals.grandTotal).toFixed(0)}`;
 
-  // set item totals per rendered items
+  // set item totals per rendered items and bind qty buttons
   document.querySelectorAll('.cart-item').forEach((el, idx)=>{
     const it = cart[idx];
     const itemTotalEl = el.querySelector('.item-total');
+    const countEl = el.querySelector('[data-count]');
     if(itemTotalEl){
       itemTotalEl.textContent = (totals.unitPrice * it.qty).toFixed(0);
     }
+    if(countEl) countEl.textContent = it.qty;
   });
 
-  // attach remove handlers
+  // attach event listeners
+  document.querySelectorAll('.qty-incr').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = b.dataset.id;
+      const idx = findCartItemIndex(id);
+      if(idx !== -1){ cart[idx].qty += 1; saveCart(); refreshCartUI(); }
+    });
+  });
+  document.querySelectorAll('.qty-decr').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = b.dataset.id;
+      const idx = findCartItemIndex(id);
+      if(idx !== -1){
+        cart[idx].qty = Math.max(0, cart[idx].qty - 1);
+        if(cart[idx].qty === 0) cart.splice(idx,1);
+        saveCart(); refreshCartUI();
+      }
+    });
+  });
   document.querySelectorAll('.remove-item').forEach(b=>{
-    b.addEventListener('click', (e)=>{
+    b.addEventListener('click', ()=>{
       const id = b.dataset.id;
       removeFromCart(id);
     });
   });
 }
 
-/* Open / Close cart */
 function openCart(){
   cartSection.style.display = ''; cartSection.setAttribute('aria-hidden','false');
   cartSection.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -765,7 +773,6 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout via WhatsApp */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
@@ -787,18 +794,15 @@ function checkout(){
   window.open(url, '_blank');
 }
 
-/* toast */
 let toastTimeout;
 function showToast(text){
   clearTimeout(toastTimeout);
   toastEl.textContent = text;
   toastEl.style.display = 'block';
-  toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1600);
+  toastTimeout = setTimeout(()=>{ toastEl.style.display = 'none'; }, 1400);
 }
 
-/* =========================
-   Lightbox + interactions (kept)
-   ========================= */
+/* === Lightbox + interactions === */
 let clickableItems = [];
 let currentIndex = -1;
 
@@ -815,12 +819,12 @@ function bindInteractiveElements(){
   clickableItems = Array.from(document.querySelectorAll('.gallery-grid img, .combo-grid img, .frame-wrap img, .hero-card img, .strip-card img'))
     .map(img => ({ el: img, src: img.getAttribute('src'), title: img.dataset.title || img.getAttribute('alt') || '' }));
 
-  clickableItems.forEach((it, idx) => {
+  clickableItems.forEach((it) => {
     it.el.style.cursor = 'zoom-in';
     it.el.onclick = (e)=> { e.stopPropagation(); const findIndex = clickableItems.findIndex(x=>x.el===it.el); if(findIndex!==-1) openLightbox(findIndex); };
   });
 
-  // add-to-cart buttons
+  // add-to-cart
   document.querySelectorAll('.add-to-cart').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -831,7 +835,7 @@ function bindInteractiveElements(){
     });
   });
 
-  // keep existing buy-btn (non-cart) behavior: open WhatsApp for interest
+  // non-cart buy buttons (open wa)
   document.querySelectorAll('.buy-btn:not(.add-to-cart)').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
@@ -843,7 +847,6 @@ function bindInteractiveElements(){
     };
   });
 
-  // buy-main buttons
   document.querySelectorAll('.buy-main').forEach(b=>{
     b.onclick = ()=> {
       const title = b.dataset.title || '6-Poster Combo';
@@ -875,7 +878,7 @@ function nextItem(){ if(currentIndex >= clickableItems.length - 1) currentIndex 
 lbPrev.addEventListener('click', (e)=>{ e.stopPropagation(); prevItem(); });
 lbNext.addEventListener('click', (e)=>{ e.stopPropagation(); nextItem(); });
 
-/* Scroller auto-scroll (kept) */
+/* Scroller */
 function initAutoScroller(){
   let pos = 0;
   const speed = 0.4;
@@ -898,7 +901,6 @@ function initAutoScroller(){
 
 /* Mobile nav */
 const mobileNav = document.getElementById('mobileNav');
-const hamburgerBtn = document.getElementById('hamburgerBtn');
 function setupMobileNav(){
   const links = [
     {label:'Gallery', href:'#gallery'},
@@ -917,22 +919,42 @@ function setupMobileNav(){
       mobileNav.setAttribute('aria-hidden','true');
     });
   });
-  hamburgerBtn.addEventListener('click', ()=>{
+  document.getElementById('hamburgerBtn').addEventListener('click', ()=>{
     if(mobileNav.style.display === 'block'){ mobileNav.style.display='none'; mobileNav.setAttribute('aria-hidden','true'); }
     else { mobileNav.style.display='block'; mobileNav.setAttribute('aria-hidden','false'); }
   });
 }
 
-/* GSAP */
+/* GSAP animations optimized with ScrollTrigger.batch for better mobile performance */
 function initGSAP(){
   gsap.registerPlugin(ScrollTrigger);
+  gsap.defaults({ease:'power1.out'});
+
+  // hero intro
   gsap.from('.hero-headline', {opacity:0,y:30,duration:0.8});
   gsap.from('.hero-sub', {opacity:0,y:20,duration:0.6,delay:0.12});
   gsap.to('.hero-card img', {scale:1.02, yoyo:true, repeat:-1, duration:5, stagger:0.6});
-  ['#gallery','#product','#combos','#customPrint','#frameGallerySection','#reviews','#contact','#cartSection'].forEach(sel=>{
-    const el = document.querySelector(sel);
-    if(el) gsap.from(el, { scrollTrigger:{ trigger: el, start:'top 90%'}, y:20, opacity:0, duration:0.65 });
+
+  // Batch animate sections: this uses ScrollTrigger.batch which is lighter than creating many triggers
+  const sections = gsap.utils.toArray('.section');
+  ScrollTrigger.batch(sections, {
+    interval: 0.12, // how often batch should be processed (in seconds)
+    batchMax: 6,    // max elements to batch
+    onEnter: batch => gsap.fromTo(batch, {y:20, opacity:0}, {y:0, opacity:1, stagger:0.08, duration:0.6, overwrite:true}),
+    start: 'top 85%',
+    once: false
   });
+
+  // small text loop animation for promo (non-blocking)
+  const promoWords = ['Limited Drops','Free Shipping','Gift-ready Frames','Kodak 180 GSM','COD Available'];
+  let pIdx = 0;
+  setInterval(()=> {
+    pIdx = (pIdx+1) % promoWords.length;
+    gsap.to('#promoLoop', {duration:0.25, opacity:0, y:-6, onComplete(){
+      document.getElementById('promoLoop').textContent = promoWords[pIdx];
+      gsap.fromTo('#promoLoop',{y:6,opacity:0},{y:0,opacity:1,duration:0.35});
+    }});
+  }, 2600);
 }
 
 /* Nav active update */
@@ -969,22 +991,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   refreshCartUI();
 
-  // promo loop
-  const promoWords = ['Limited Drops','Free Shipping','Gift-ready Frames','Kodak 180 GSM','COD Available'];
-  let promoIndex = 0;
-  setInterval(()=> {
-    promoIndex = (promoIndex+1) % promoWords.length;
-    gsap.to('#promoLoop', {duration:0.25, opacity:0, y:-6, onComplete(){
-      document.getElementById('promoLoop').textContent = promoWords[promoIndex];
-      gsap.fromTo('#promoLoop',{y:6,opacity:0},{y:0,opacity:1,duration:0.45});
-    }});
-  }, 2600);
-
-  // cart open/close
+  // open cart / close cart
   openCartBtn.addEventListener('click', ()=> openCart());
   closeCartBtn.addEventListener('click', ()=> closeCart());
 
-  // payment method change updates totals
+  // payment change
   paymentMethodEl.addEventListener('change', ()=> refreshCartUI());
 
   // checkout
@@ -997,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     window.open(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`, '_blank');
   });
 
-  // custom order button
+  // custom order
   const customWhatsAppBtn = document.getElementById('customWhatsAppBtn');
   if(customWhatsAppBtn) customWhatsAppBtn.addEventListener('click', ()=> {
     const base = `Hi I want a custom printed frame. Please assist.`;
@@ -1006,8 +1017,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   bindInteractiveElements();
 });
-
-/* end */
 </script>
 </body>
 </html>
