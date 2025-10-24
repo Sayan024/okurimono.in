@@ -18,12 +18,24 @@
   html { scroll-behavior: smooth; }
   body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.35}
 
+  /* Make space so fixed header won't overlap content (adjust if header height changes) */
+  body{padding-top:110px;}
+
   /* SECTION helper: each major block is full width; inner container centers */
   .section { width:100%; padding:30px 0; }
   .container { max-width:var(--max-content-width); margin:0 auto; padding:0 20px; }
 
-  /* header / nav */
-  .header-wrap{position:sticky;top:0;z-index:999;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.06));backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.02)}
+  /* header / nav - FIXED */
+  .header-wrap{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:1000;
+    background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.18));
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(255,255,255,0.02);
+  }
   .header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;max-width:var(--max-content-width);margin:0 auto}
   .logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent}
   nav.primary { display:flex; gap:8px; align-items:center; }
@@ -91,7 +103,6 @@
   .controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
   .filter-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 14px;border-radius:30px;color:var(--text);cursor:pointer}
   .filter-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent3));border:none;color:white}
-
   .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;align-items:start}
   .poster-card{border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:block}
   .poster-card img{width:100%;height:100%;display:block;object-fit:cover}
@@ -186,7 +197,6 @@
     .hamburger{display:flex}
     nav.primary{display:none}
     .mobile-nav{display:none}
-    /* custom print: stack left + right for mobile */
     .custom-print{flex-direction:column;align-items:flex-start}
     .custom-print .right{width:100%;flex:1}
     .custom-print .left{width:100%}
@@ -228,243 +238,225 @@
 </head>
 <body>
 
-  <!-- top offer full width -->
-  <div class="top-offer">🎉 Limited Offer — 6 Premium A4 Posters for ₹259 (was ₹299)! Free Delivery & COD (T&C apply) 🎉</div>
+<div class="top-offer">🎉 Limited Offer — 6 Premium A4 Posters for ₹259 (was ₹299)! Free Delivery & COD (T&C apply) 🎉</div>
 
-  <!-- header -->
-  <header class="header-wrap">
-    <div class="header-inner">
-      <div class="logo">Okurimono.in</div>
+<header class="header-wrap">
+  <div class="header-inner">
+    <div class="logo">Okurimono.in</div>
+    <nav class="primary" id="navPrimary">
+      <a href="#gallery" data-target="gallery">Gallery</a>
+      <a href="#product" data-target="product">Product</a>
+      <a href="#frameGallerySection" data-target="frameGallerySection">Frames</a>
+      <a href="#contact" data-target="contact">Contact</a>
+    </nav>
 
-      <!-- primary nav (desktop) -->
-      <nav class="primary" id="navPrimary">
-        <a href="#gallery" data-target="gallery">Gallery</a>
-        <a href="#product" data-target="product">Product</a>
-        <a href="#frameGallerySection" data-target="frameGallerySection">Frames</a>
-        <a href="#contact" data-target="contact">Contact</a>
-      </nav>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="cart-btn" id="openCartBtn">Cart (0)</button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><div></div></button>
+    </div>
 
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="cart-btn" id="openCartBtn">Cart (0)</button>
-        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><div></div></button>
+    <div id="mobileNav" class="mobile-nav" aria-hidden="true"></div>
+  </div>
+</header>
+
+<section class="section hero" id="hero">
+  <div class="hero-inner">
+    <div class="container">
+      <h1 class="hero-headline">
+        <span>COLLECT</span>
+        <span class="highlight">POSTERS & FRAMES</span>
+        <div style="display:block">FOR YOU</div>
+      </h1>
+
+      <p class="hero-sub">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
+
+      <div class="cta-row">
+        <a class="btn btn-outline" href="#gallery">Explore</a>
+        <button class="btn btn-primary" id="customizeBtn">Customize</button>
       </div>
 
-      <!-- mobile menu (rendered by JS) -->
-      <div id="mobileNav" class="mobile-nav" aria-hidden="true"></div>
-    </div>
-  </header>
-
-  <!-- HERO - full width -->
-  <section class="section hero" id="hero">
-    <div class="hero-inner">
-      <div class="container">
-        <h1 class="hero-headline">
-          <span>COLLECT</span>
-          <span class="highlight">POSTERS & FRAMES</span>
-          <div style="display:block">FOR YOU</div>
-        </h1>
-
-        <p class="hero-sub">Latest poster drops, curated frames and gift-ready prints — bold typography & layered visuals.</p>
-
-        <div class="cta-row">
-          <a class="btn btn-outline" href="#gallery">Explore</a>
-          <button class="btn btn-primary" id="customizeBtn">Customize</button>
-        </div>
-
-        <div class="promo-row" style="margin-top:10px">
-          <span style="color:var(--muted)">Trending:</span>
-          <span id="promoLoop">Limited Drops</span>
-        </div>
-
-        <div class="hero-cards" id="heroCards"></div>
+      <div class="promo-row" style="margin-top:10px">
+        <span style="color:var(--muted)">Trending:</span>
+        <span id="promoLoop">Limited Drops</span>
       </div>
-    </div>
-  </section>
 
-  <!-- scrolling strip (uses separate JS array) -->
-  <section class="section scrolling-strip">
-    <div class="container">
-      <div class="scroller" id="autoScroller"></div>
-    </div>
-  </section>
-
-  <!-- controls -->
-  <section class="section">
-    <div class="container">
-      <div class="controls" id="controls">
-        <button class="filter-btn active" data-cat="">All</button>
-        <button class="filter-btn" data-cat="anime">Anime</button>
-        <button class="filter-btn" data-cat="cars">Cars</button>
-        <button class="filter-btn" data-cat="music">Music</button>
-        <button class="filter-btn" data-cat="quotes">Quotes</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- GALLERY -->
-  <section class="section" id="gallery">
-    <div class="container">
-      <div id="galleryGrid" class="gallery-grid" role="list"></div>
-      <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
-    </div>
-  </section>
-
-  <!-- PRODUCT -->
-  <section class="section" id="product">
-    <div class="container">
-      <div id="productInner" class="product"></div>
-    </div>
-  </section>
-
-  <!-- COMBOS -->
-  <section class="section" id="combos">
-    <div class="container">
-      <h3 id="combo-heading">Combo Offers</h3>
-      <p style="color:var(--muted)">Mix & match portrait and landscape posters in your 6-poster combo.</p>
-      <div id="comboGrid" class="combo-grid" role="list"></div>
-    </div>
-  </section>
-
-  <!-- CUSTOM PRINT -->
-  <section class="section custom-print" id="customPrint">
-    <div class="container" style="display:flex;align-items:flex-start;gap:20px">
-      <div class="left">
-        <div class="fancy-title">Custom Printed Frames for Special Occasions</div>
-        <p class="custom-desc">Celebrate birthdays, anniversaries and memories with a framed poster. We print on Kodak 180 GSM, finish and frame to gift-ready standards — secure packaging and preview before dispatch.</p>
-        <div class="contact-cta" style="margin-top:8px">
-          <button class="btn btn-primary" id="customWhatsAppBtn">Message for Custom Order</button>
-          <a class="btn btn-outline" href="#contact">Contact</a>
-        </div>
-      </div>
-      <div class="right">
-        <div class="custom-frame" id="customFrameDemo" style="position:relative">
-          <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
-          <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn add-to-cart" data-id="frame-demo" data-title="Birthday Frame" data-src="https://picsum.photos/seed/frame/400/600">Add to cart</button></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FRAME GALLERY -->
-  <section class="section" id="frameGallerySection">
-    <div class="container">
-      <h3 style="margin-bottom:12px">Frame Gallery (Preview frames over posters)</h3>
-      <div id="frameGrid" class="frame-gallery"></div>
-    </div>
-  </section>
-
-  <!-- REVIEWS -->
-  <section class="section reviews" id="reviews">
-    <div class="container">
-      <h3>Customer Reviews & Instagram</h3>
-      <div style="display:grid;gap:10px;margin-top:10px">
-        <div style="background:var(--card);padding:12px;border-radius:10px">“Great colors and quick delivery — Sayan”</div>
-        <div style="background:var(--card);padding:12px;border-radius:10px">“Perfect gift for birthday — Ananya”</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- POLICY -->
-  <section class="section policy">
-    <div class="container">
-      <h3>Payment, COD & Return Policy</h3>
-      <p style="color:var(--muted)"><strong>Prepaid:</strong> Instant confirmation via UPI/PhonePe/Paytm. Custom orders may request a small ₹50 advance.</p>
-      <p style="color:var(--muted)"><strong>COD:</strong> COD available with handling fee (e.g., ₹90). Full COD-only bundles may be priced higher (e.g., ₹350).</p>
-      <p style="color:var(--muted)"><strong>Returns:</strong> Record an unboxing video at delivery. Report damage within 48 hours with video & photos; we will replace damaged items at no extra cost.</p>
-    </div>
-  </section>
-
-  <!-- SHIPPING -->
-  <section class="section shipping">
-    <div class="container">
-      <h3>Shipping</h3>
-      <p style="color:var(--muted)">Free delivery PAN India via DTDC or equivalent. Delivery estimate: 5–6 working days after dispatch.</p>
-    </div>
-  </section>
-
-  <!-- CART SECTION -->
-  <section class="section" id="cartSection" aria-hidden="true" style="display:none;">
-    <div class="container">
-      <div class="cart-section">
-        <h3>Your Cart (<span id="cartCount">0</span>)</h3>
-        <div id="cartList" class="cart-list"></div>
-
-        <div class="cart-summary" id="cartSummary">
-          <div class="summary-row"><div>Items total</div><div id="itemsTotal">₹0</div></div>
-          <div class="summary-row"><div>COD fee (if COD)</div><div id="codFee">₹0</div></div>
-          <div class="summary-row"><div>Advance now (if applicable)</div><div id="advanceNow">₹0</div></div>
-          <div class="summary-row total"><div>Grand Total</div><div id="grandTotal">₹0</div></div>
-
-          <div style="margin-top:12px">
-            <label style="display:block;margin-bottom:8px;color:var(--muted)">Payment Method</label>
-            <select id="paymentMethod" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
-              <option value="upi">UPI (full)</option>
-              <option value="cod">Cash on Delivery (+₹75)</option>
-              <option value="advance">Advance (Special: if total posters ≥ 6 pay ₹50 now)</option>
-            </select>
-          </div>
-
-          <div style="margin-top:12px">
-            <button id="checkoutBtn" class="btn btn-primary">Checkout via WhatsApp</button>
-            <button id="closeCartBtn" class="btn btn-outline" style="margin-left:8px">Close</button>
-          </div>
-
-          <div style="margin-top:12px;color:var(--muted);font-size:14px">
-            <strong>Damage / Transit:</strong> If any product is damaged or torn on transit, record the unboxing video and share with us within 48 hours. We'll replace damaged items free of cost with no extra charges.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT: NO CALL - leave a WhatsApp message -->
-  <section class="section" id="contact">
-    <div class="container">
-      <div class="contact">
-        <div class="col">
-          <h3>Contact Us</h3>
-          <p style="color:var(--muted)">Please do not call — <strong>leave us a WhatsApp message</strong> and we'll reply quickly.</p>
-          <p><strong>WhatsApp:</strong>
-            <button class="buy-btn" id="contactWhatsAppBtn">Message on WhatsApp</button>
-          </p>
-          <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
-        </div>
-        <div class="col" style="min-width:220px">
-          <p style="color:var(--muted)"><strong>Business Hours</strong></p>
-          <p>Open all day — 24/7</p>
-          <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="section" style="padding-top:8px;padding-bottom:20px">
-    <div class="container" style="text-align:center;color:var(--muted)">© Okurimono.in • DM @okurimono.in</div>
-  </footer>
-
-  <!-- LIGHTBOX -->
-  <div id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
-    <div class="backdrop" id="lbBackdrop"></div>
-    <div class="content" role="document" id="lbContent">
-      <button class="close" id="lbClose" aria-label="Close">×</button>
-      <div class="nav">
-        <button id="lbPrev" aria-label="Previous">‹</button>
-        <button id="lbNext" aria-label="Next">›</button>
-      </div>
-      <img src="" alt="" id="lbImage">
-      <div class="desc" id="lbDesc"></div>
+      <div class="hero-cards" id="heroCards"></div>
     </div>
   </div>
+</section>
 
-  <!-- toast -->
-  <div id="toast" class="toast">Already in cart</div>
+<section class="section scrolling-strip">
+  <div class="container">
+    <div class="scroller" id="autoScroller"></div>
+  </div>
+</section>
 
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<section class="section">
+  <div class="container">
+    <div class="controls" id="controls">
+      <button class="filter-btn active" data-cat="">All</button>
+      <button class="filter-btn" data-cat="anime">Anime</button>
+      <button class="filter-btn" data-cat="cars">Cars</button>
+      <button class="filter-btn" data-cat="music">Music</button>
+      <button class="filter-btn" data-cat="quotes">Quotes</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="gallery">
+  <div class="container">
+    <div id="galleryGrid" class="gallery-grid" role="list"></div>
+    <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
+  </div>
+</section>
+
+<section class="section" id="product">
+  <div class="container">
+    <div id="productInner" class="product"></div>
+  </div>
+</section>
+
+<section class="section" id="combos">
+  <div class="container">
+    <h3 id="combo-heading">Combo Offers</h3>
+    <p style="color:var(--muted)">Mix & match portrait and landscape posters in your 6-poster combo.</p>
+    <div id="comboGrid" class="combo-grid" role="list"></div>
+  </div>
+</section>
+
+<section class="section custom-print" id="customPrint">
+  <div class="container" style="display:flex;align-items:flex-start;gap:20px">
+    <div class="left">
+      <div class="fancy-title" id="customTitle" style="font-family:'Anton',sans-serif;font-size:28px;background:linear-gradient(90deg,var(--accent1),var(--accent3));-webkit-background-clip:text;color:transparent">Custom Printed Frames for Special Occasions</div>
+      <p class="custom-desc">Celebrate birthdays, anniversaries and memories with a framed poster. We print on Kodak 180 GSM, finish and frame to gift-ready standards — secure packaging and preview before dispatch.</p>
+      <div class="contact-cta" style="margin-top:8px">
+        <button class="btn btn-primary" id="customWhatsAppBtn">Message for Custom Order</button>
+        <a class="btn btn-outline" href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="right">
+      <div class="custom-frame" id="customFrameDemo" style="position:relative">
+        <img src="https://picsum.photos/seed/frame/400/600" alt="frame demo" data-title="Birthday Frame" style="width:100%;height:320px;object-fit:cover;border-radius:8px">
+        <div style="position:absolute;right:12px;bottom:12px"><button class="buy-btn add-to-cart" data-id="frame-demo" data-title="Birthday Frame" data-src="https://picsum.photos/seed/frame/400/600">Add to cart</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="frameGallerySection">
+  <div class="container">
+    <h3 style="margin-bottom:12px">Frame Gallery (Preview frames over posters)</h3>
+    <div id="frameGrid" class="frame-gallery"></div>
+  </div>
+</section>
+
+<section class="section reviews" id="reviews">
+  <div class="container">
+    <h3>Customer Reviews & Instagram</h3>
+    <div style="display:grid;gap:10px;margin-top:10px">
+      <div style="background:var(--card);padding:12px;border-radius:10px">“Great colors and quick delivery — Sayan”</div>
+      <div style="background:var(--card);padding:12px;border-radius:10px">“Perfect gift for birthday — Ananya”</div>
+    </div>
+  </div>
+</section>
+
+<section class="section policy">
+  <div class="container">
+    <h3>Payment, COD & Return Policy</h3>
+    <p style="color:var(--muted)"><strong>Prepaid:</strong> Instant confirmation via UPI/PhonePe/Paytm. Custom orders may request a small ₹50 advance.</p>
+    <p style="color:var(--muted)"><strong>COD:</strong> COD available with handling fee (e.g., ₹90). Full COD-only bundles may be priced higher (e.g., ₹350).</p>
+    <p style="color:var(--muted)"><strong>Returns:</strong> Record an unboxing video at delivery. Report damage within 48 hours with video & photos; we will replace damaged items at no extra cost.</p>
+  </div>
+</section>
+
+<section class="section shipping">
+  <div class="container">
+    <h3>Shipping</h3>
+    <p style="color:var(--muted)">Free delivery PAN India via DTDC or equivalent. Delivery estimate: 5–6 working days after dispatch.</p>
+  </div>
+</section>
+
+<section class="section" id="cartSection" aria-hidden="true" style="display:none;">
+  <div class="container">
+    <div class="cart-section">
+      <h3>Your Cart (<span id="cartCount">0</span>)</h3>
+      <div id="cartList" class="cart-list"></div>
+
+      <div class="cart-summary" id="cartSummary">
+        <div class="summary-row"><div>Items total</div><div id="itemsTotal">₹0</div></div>
+        <div class="summary-row"><div>COD fee (if COD)</div><div id="codFee">₹0</div></div>
+        <div class="summary-row"><div>Advance now (if applicable)</div><div id="advanceNow">₹0</div></div>
+        <div class="summary-row total"><div>Grand Total</div><div id="grandTotal">₹0</div></div>
+
+        <div style="margin-top:12px">
+          <label style="display:block;margin-bottom:8px;color:var(--muted)">Payment Method</label>
+          <select id="paymentMethod" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
+            <option value="upi">UPI (full)</option>
+            <option value="cod">Cash on Delivery (+₹75)</option>
+            <option value="advance">Advance (Special: if total posters ≥ 6 pay ₹50 now)</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="checkoutBtn" class="btn btn-primary">Checkout via WhatsApp</button>
+          <button id="closeCartBtn" class="btn btn-outline" style="margin-left:8px">Close</button>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:14px">
+          <strong>Damage / Transit:</strong> If any product is damaged or torn on transit, record the unboxing video and share with us within 48 hours. We'll replace damaged items free of cost with no extra charges.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="container">
+    <div class="contact">
+      <div class="col">
+        <h3>Contact Us</h3>
+        <p style="color:var(--muted)">Please do not call — <strong>leave us a WhatsApp message</strong> and we'll reply quickly.</p>
+        <p><strong>WhatsApp:</strong>
+          <button class="buy-btn" id="contactWhatsAppBtn">Message on WhatsApp</button>
+        </p>
+        <p><strong>Instagram:</strong> <a href="https://instagram.com/okurimono.in" target="_blank" rel="noopener">@okurimono.in</a></p>
+      </div>
+      <div class="col" style="min-width:220px">
+        <p style="color:var(--muted)"><strong>Business Hours</strong></p>
+        <p>Open all day — 24/7</p>
+        <p style="color:var(--muted);font-size:13px">Do not call — please leave a message on WhatsApp.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="section" style="padding-top:8px;padding-bottom:20px">
+  <div class="container" style="text-align:center;color:var(--muted)">© Okurimono.in • DM @okurimono.in</div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
+  <div class="backdrop" id="lbBackdrop"></div>
+  <div class="content" role="document" id="lbContent">
+    <button class="close" id="lbClose" aria-label="Close">×</button>
+    <div class="nav">
+      <button id="lbPrev" aria-label="Previous">‹</button>
+      <button id="lbNext" aria-label="Next">›</button>
+    </div>
+    <img src="" alt="" id="lbImage">
+    <div class="desc" id="lbDesc"></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast">Already in cart</div>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
 <script>
-/* === Data arrays (framesData now include cat to support frame filtering) === */
+/* === Data arrays (framesData include cat) === */
 const heroUploadedImages = [
   'https://mo4dwpnnzycp1ede.public.blob.vercel-storage.com/heroImg1.png',
   'https://mo4dwpnnzycp1ede.public.blob.vercel-storage.com/heroImg2.png',
@@ -498,9 +490,6 @@ const combos = [
   {id:'c3', src:'https://picsum.photos/seed/c3/600/400', title:'Combo 3'}
 ];
 
-/* === IMPORTANT CHANGE: framesData now has a 'cat' field so filter buttons can filter frames ===
-   Map frames to categories (change cat values as you like).
-*/
 const framesData = [
   {id:'f1', src:'https://picsum.photos/seed/f1/600/800', title:'Framed Black', frameType:'black', cat:'cars'},
   {id:'f2', src:'https://picsum.photos/seed/f2/600/800', title:'Framed White', frameType:'white', cat:'anime'},
@@ -627,17 +616,12 @@ function renderMainProduct(){
   </div>`;
 }
 
-/* === Cart logic (unchanged from your last requested behavior) === */
+/* === Cart logic (unchanged except alert on add) === */
 
-/* find index helper */
 function findCartItemIndex(id){
   return cart.findIndex(it => it.id === String(id));
 }
 
-/* Add to cart:
-   - default quantity when adding a new item is 1
-   - if item already exists, do not increment automatically (toast 'Already in cart')
-*/
 function addToCart(item){
   const id = String(item.id);
   const idx = findCartItemIndex(id);
@@ -645,17 +629,18 @@ function addToCart(item){
     cart.push({ id, title: item.title, src: item.src, qty: 1 }); // default qty = 1
     saveCart();
     refreshCartUI();
+    // <-- Requested change: alert on successful add (works in mobile + desktop)
+    try { alert('Added to cart successfully!'); } catch(e){}
     showToast('Added to cart');
   } else {
     showToast('Already in cart');
   }
 }
 
-/* Update qty and removal (qty change allowed in cart UI) */
 function updateQty(id, qty){
   const idx = findCartItemIndex(id);
   if(idx === -1) return;
-  cart[idx].qty = Math.max(1, Math.floor(qty)); // ensure min 1
+  cart[idx].qty = Math.max(1, Math.floor(qty));
   saveCart();
   refreshCartUI();
 }
@@ -667,7 +652,6 @@ function removeFromCart(id){
   refreshCartUI();
 }
 
-/* Pricing rules unchanged */
 function unitPriceBasedOnTotalItems(totalItems){
   if(totalItems >= 6 && totalItems <= 15) return 43;
   if(totalItems <= 3) return 60;
@@ -675,7 +659,6 @@ function unitPriceBasedOnTotalItems(totalItems){
   return 43;
 }
 
-/* computeCartTotals with min qty guard (>=3) */
 function computeCartTotals(paymentMethod){
   let itemsTotal = 0;
   let totalQty = 0;
@@ -787,7 +770,7 @@ function closeCart(){
   cartSection.style.display = 'none'; cartSection.setAttribute('aria-hidden','true');
 }
 
-/* Checkout guard and WA message (unchanged) */
+/* Checkout - changed to api.whatsapp.com/send (no URL added into message body) */
 function checkout(){
   if(cart.length === 0){ alert('Cart is empty. Add posters to proceed.'); return; }
   const pm = paymentMethodEl.value;
@@ -800,10 +783,11 @@ function checkout(){
 
   const firstItem = cart[0];
   let msgParts = [];
+  // include first image URL at top (so whatsapp message contains image url text only if you want)
   if(firstItem && firstItem.src){
     msgParts.push(`${firstItem.src}`);
   }
-  msgParts.push(`*Order from Okurimono.in*`);
+  msgParts.push(`Order from Okurimono.in`);
   msgParts.push(`Payment: ${pm.toUpperCase()}`);
   msgParts.push(`Unit price per item (based on total items ${totals.totalQty}): ₹${totals.unitPrice}`);
   msgParts.push(`Items:`);
@@ -815,10 +799,11 @@ function checkout(){
   if(totals.codFee) msgParts.push(`COD fee: ₹${totals.codFee}`);
   if(totals.advanceNow) msgParts.push(`Advance now: ₹${totals.advanceNow} (Remaining on delivery: ₹${(totals.grandTotal - totals.advanceNow)})`);
   msgParts.push(`Grand total: ₹${totals.grandTotal}`);
-  msgParts.push(`\nPlease pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
+  msgParts.push(`Please pack securely. If any item is damaged on delivery, I will share an unboxing video for replacement.`);
 
   const finalMessage = encodeURIComponent(msgParts.join('\n'));
-  const url = `https://wa.me/${WA_PHONE}?text=${finalMessage}`;
+  // <-- Requested change: use api.whatsapp.com/send so WhatsApp opens cleanly; message text contains only order details
+  const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${finalMessage}`;
   window.open(url, '_blank');
 }
 
@@ -864,14 +849,14 @@ function bindInteractiveElements(){
     });
   });
 
-  // non-cart buy buttons (open wa)
+  // non-cart buy buttons -> open WhatsApp via api.whatsapp.com/send (no url text in message body)
   document.querySelectorAll('.buy-btn:not(.add-to-cart)').forEach(btn=>{
     btn.onclick = (e)=>{
       e.stopPropagation();
       const id = btn.dataset.id || '';
       const title = btn.dataset.title || 'Poster';
       const base = `Hi I am interested in your poster collection! Poster: ${title} (ID: ${id})`;
-      const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
+      const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${encodeURIComponent(base)}`;
       window.open(url, '_blank');
     };
   });
@@ -880,7 +865,7 @@ function bindInteractiveElements(){
     b.onclick = ()=> {
       const title = b.dataset.title || '6-Poster Combo';
       const base = `Hi I am interested in your poster collection! Product: ${title}`;
-      const url = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`;
+      const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${encodeURIComponent(base)}`;
       window.open(url, '_blank');
     };
   });
@@ -1030,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initGSAP();
   updateActiveNavOnScroll();
 
-  setupFilters(); // <-- important: wire up filter buttons to filter frames too
+  setupFilters(); // <-- wire up filter buttons to filter frames too
 
   refreshCartUI();
 
@@ -1044,18 +1029,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // checkout
   checkoutBtn.addEventListener('click', ()=> checkout());
 
-  // contact whatsapp
+  // contact whatsapp (uses api.whatsapp.com/send)
   const contactWhatsAppBtn = document.getElementById('contactWhatsAppBtn');
   contactWhatsAppBtn.addEventListener('click', ()=> {
     const base = `Hi I am interested in your poster collection!`;
-    window.open(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`, '_blank');
+    const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${encodeURIComponent(base)}`;
+    window.open(url, '_blank');
   });
 
   // custom order
   const customWhatsAppBtn = document.getElementById('customWhatsAppBtn');
   if(customWhatsAppBtn) customWhatsAppBtn.addEventListener('click', ()=> {
     const base = `Hi I want a custom printed frame. Please assist.`;
-    window.open(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(base)}`, '_blank');
+    const url = `https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${encodeURIComponent(base)}`;
+    window.open(url, '_blank');
   });
 
   bindInteractiveElements();
@@ -1063,4 +1050,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
-
